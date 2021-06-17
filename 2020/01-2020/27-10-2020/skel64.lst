@@ -1,0 +1,153 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o P1.o P1.asm -l P1.lst
+     4                                  ;link:	   -->> gcc -o P1 P1.o
+     5                                  ;run:      -->> P1
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: P1.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf,gets,strlen		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15 00000000 496E74726F64757A63-     m1 db  "Introduzca la cadena a analizar",0
+    15 00000009 61206C612063616465-
+    15 00000012 6E61206120616E616C-
+    15 0000001B 697A617200         
+    16 00000020 6C6120636164656E61-     m2 db "la cadena introducida NO es un correo",0
+    16 00000029 20696E74726F647563-
+    16 00000032 696461204E4F206573-
+    16 0000003B 20756E20636F727265-
+    16 00000044 6F00               
+    17 00000046 6C6120636164656E61-     m3 db "la cadena introducida SI es un correo",0
+    17 0000004F 20696E74726F647563-
+    17 00000058 696461205349206573-
+    17 00000061 20756E20636F727265-
+    17 0000006A 6F00               
+    18 0000006C 257300                  fmt db "%s",0
+    19                                  		
+    20                                  segment .bss
+    21                                  ;Block Started by Symbol(BSS) 
+    22                                  ;aqui van las variables declaradas pero sin inicializar
+    23                                  
+    24 00000000 <res 00000064>          correo resb 100
+    25                                  
+    26                                  
+    27                                  segment .text 
+    28                                  
+    29                                  
+    30                                  global main 					
+    31                                  main:	
+    32                                  ;etiqueta que indica el comienzo del programa principal
+    33                                  ;aqui van las instrucciones
+    34                                  
+    35                                  
+    36 00000000 4883EC20                sub rsp,0x20
+    37 00000004 48B9-                   mov rcx, m1
+    37 00000006 [0000000000000000] 
+    38 0000000E E8(00000000)            call printf
+    39 00000013 4883C420                add rsp,0x20
+    40                                  
+    41                                  
+    42 00000017 4883EC20                sub rsp,0x20 
+    43 0000001B 48B9-                   mov rcx,correo
+    43 0000001D [0000000000000000] 
+    44 00000025 E8(00000000)            call gets
+    45 0000002A 4883C420                add rsp,0x20
+    46                                  	
+    47                                  
+    48                                  ;sub rsp,0x20
+    49                                  ;mov rcx, correo
+    50                                  ;call printf
+    51                                  ;add rsp,0x20
+    52                                  
+    53                                  ;Funcion para detectar que es un correo devuelva 0 si no es y 1	si es 
+    54                                  
+    55 0000002E 4883EC20                sub rsp,0x20
+    56 00000032 48B9-                   mov rcx, correo
+    56 00000034 [0000000000000000] 
+    57 0000003C E83D000000              call  detectorCorreo
+    58 00000041 4883C420                add rsp,0x20
+    59                                  ; EAX
+    60 00000045 4883F800                CMP rax,0
+    61 00000049 7402                    JE noEsCorreo
+    62 0000004B EB19                    JMP siEsCorreo
+    63                                  noEsCorreo:
+    64                                  	
+    65 0000004D 4883EC14                	sub rsp,20
+    66 00000051 48B9-                   		mov rcx,m2
+    66 00000053 [2000000000000000] 
+    67 0000005B E8(00000000)            		call printf
+    68 00000060 4883C414                	add rsp,20
+    69 00000064 EB17                    JMP fin
+    70                                  siEsCorreo:
+    71 00000066 4883EC14                	sub rsp,20
+    72 0000006A 48B9-                   		mov rcx,m3
+    72 0000006C [4600000000000000] 
+    73 00000074 E8(00000000)            		call printf
+    74 00000079 4883C414                	add rsp,20
+    75                                  fin:	
+    76                                  	
+    77 0000007D C3                      ret
+    78                                  ;---------------------------------------
+    79                                  ;..........subrutinas....................	
+    80                                  
+    81                                  detectorCorreo:
+    82                                  ; en rcx esta la direccion del correo
+    83 0000007E 4989C8                  mov r8,rcx  ; r8 direccion de correo
+    84 00000081 4150                    push r8
+    85 00000083 4883EC20                sub rsp,0x20
+    86                                  ;mov rcx,rcx
+    87 00000087 E8(00000000)            call strlen
+    88 0000008C 4883C420                add rsp,0x20
+    89 00000090 4158                    pop r8
+    90                                  ; rax = tamaño de la cadena
+    91 00000092 4989C1                  mov r9,rax ; r9 tamaño de la cadena
+    92                                  
+    93 00000095 4C89C9                  mov rcx, r9
+    94 00000098 4D31E4                  xor r12,r12 
+    95 0000009B 4831DB                  xor rbx,rbx
+    96 0000009E 4D31D2                  xor r10,r10
+    97 000000A1 4D31DB                  xor r11,r11
+    98                                  ciclo:
+    99                                  
+   100 000000A4 438A1C20                		mov bl,byte[r8+r12] ; caracter actual en bl
+   101                                  		;comparar primero arroba
+   102 000000A8 80FB40                  		cmp bl,64 ;@ en ascii decimal	
+   103 000000AB 7407                    		JE encontroArroba 
+   104 000000AD 80FB2E                  		cmp bl,46 ; .  en ascii decimal
+   105 000000B0 740A                    		JE encontroPunto
+   106 000000B2 EB16                    		jmp finArrPunto
+   107                                  	encontroArroba:
+   108                                  	
+   109 000000B4 41BA01000000            		MOV R10,1
+   110 000000BA EB0E                    		JMP finArrPunto
+   111                                  	
+   112                                  	encontroPunto:
+   113 000000BC 4983FA01                		cmp r10,1
+   114 000000C0 7402                    		JE siEncontro@antes
+   115 000000C2 EB06                    		JMP NOEncontro@antes
+   116                                  	siEncontro@antes:
+   117 000000C4 41BB01000000            		mov r11,1
+   118                                  	
+   119                                  	finArrPunto:
+   120                                  
+   121                                  	NOEncontro@antes:
+   122                                  	;comparar punto
+   123 000000CA 49FFC4                  		inc r12
+   124 000000CD E2D5                    loop ciclo
+   125                                  
+   126 000000CF 4D39DA                  cmp r10,r11
+   127 000000D2 7507                    JNE NoEsCorreoFuncion
+   128                                  ;escorreo
+   129 000000D4 B801000000              mov rax,1
+   130 000000D9 EB03                    JMP finFuncion
+   131                                  NoEsCorreoFuncion:
+   132 000000DB 4831C0                  XOR rax,rax
+   133                                  
+   134                                  finFuncion:
+   135 000000DE C3                      ret
+   136                                  
+   137                                  

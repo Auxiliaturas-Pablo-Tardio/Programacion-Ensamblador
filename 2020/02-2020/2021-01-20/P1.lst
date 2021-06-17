@@ -1,0 +1,71 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o P1.o P1.asm -l P1.lst
+     4                                  ;link:	   -->> gcc -o P1 P1.o
+     5                                  ;run:      -->> P1
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: P1.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15 00000000 D5FEFFFF                a dd -299
+    16 00000004 DF087000                b dd 7342303
+    17 00000008 79CCFF0C                c dd 218090617
+    18 0000000C A9FFFFFF                d dd -87
+    19                                  
+    20                                   
+    21                                  segment .bss 
+    22                                  ;Block Started by Symbol(BSS) 
+    23                                  ;aqui van las variables declaradas pero sin inicializar
+    24 00000000 <res 00000004>          y resd 1
+    25 00000004 <res 00000004>          x resd 1
+    26                                  segment .text 
+    27                                  
+    28                                  global main 					
+    29                                  main:	
+    30                                  ;etiqueta que indica el comienzo del programa principal
+    31                                  ;aqui van las instrucciones
+    32 00000000 4831C0                  Xor rax,rax
+    33 00000003 4831DB                  Xor rbx,rbx
+    34 00000006 4831C9                  Xor rcx,rcx
+    35 00000009 4831D2                  Xor rdx,rdx	
+    36                                  
+    37 0000000C 8B0C25[08000000]        mov ecx,[c]
+    38 00000013 83E961                  sub ecx,97  ;Listo 1
+    39                                  
+    40 00000016 8B1425[0C000000]        MOV edx,[d]
+    41 0000001D F7DA                    NEG edx ; parte 2
+    42                                  
+    43 0000001F 8B0425[00000000]        MOV eax,[a]
+    44 00000026 29C8                    sub eax,ecx ;parte 3
+    45                                  
+    46 00000028 29D0                    Sub eax,edx  ;parte 4
+    47                                  
+    48 0000002A 890425[04000000]        mov [x],eax  ; 
+    49                                  
+    50                                  
+    51 00000031 8B1425[0C000000]        mov edx,[d] ;A
+    52 00000038 83C231                  add edx,49
+    53                                  
+    54 0000003B 8B0425[00000000]        mov eax,[a] ;B
+    55 00000042 83C023                  add eax,35
+    56                                  
+    57                                  
+    58 00000045 2B0425[04000000]        SUB EAX,[b] ;C
+    59                                  
+    60 0000004C 031425[04000000]        add edx,[x] ;D
+    61                                  
+    62 00000053 29C2                    SUB EDX,EAX	 ;E
+    63                                  
+    64 00000055 891425[00000000]        MOV [y],edx
+    65                                  
+    66 0000005C C3                      ret
+    67                                  ;---------------------------------------
+    68                                  ;..........subrutinas....................	
+    69                                  
+    70                                  
+    71                                  

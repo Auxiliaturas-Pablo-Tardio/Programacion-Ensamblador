@@ -1,0 +1,101 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o P1.o P1.asm -l P1.lst
+     4                                  ;link:	   -->> gcc64 -o P1 P1.o
+     5                                  ;run:      -->> P1
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: P1.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15                                  
+    16 00000000 9814F00C00000000        N dq 217060504
+    17                                  segment .bss
+    18                                  ;Block Started by Symbol(BSS) 
+    19                                  ;aqui van las variables declaradas pero sin inicializar
+    20                                  
+    21 00000000 <res 00000008>          calculo1 resq 1
+    22 00000008 <res 00000008>          calculo2 resq 1
+    23 00000010 <res 00000008>          resultado resq 1
+    24                                  segment .text 
+    25                                  
+    26                                  global main 					
+    27                                  main:	
+    28                                  ;etiqueta que indica el comienzo del programa principal
+    29                                  ;aqui van las instrucciones
+    30                                  
+    31                                  ;Parte izquierda = sumatoria
+    32                                  
+    33                                  
+    34                                  
+    35                                  ;loop = dec rcx -> JNZ etiqueta
+    36                                  ;suma
+    37 00000000 4831C0                  xor rax,rax
+    38                                  ;contador
+    39 00000003 4831DB                  xor rbx,rbx
+    40                                  
+    41 00000006 BB01000000              mov rbx, 1
+    42                                  
+    43 0000000B 488B0C25[00000000]      mov rcx,[N]
+    44                                  ciclo:
+    45                                  
+    46 00000013 4801D8                  add rax,rbx ; suma=contador+suma
+    47 00000016 4883C301                add rbx,1 ;o inc rbx
+    48                                  
+    49 0000001A E2F7                    loop ciclo
+    50                                  
+    51                                  
+    52                                  ;fin de ciclo
+    53                                  
+    54 0000001C 48890425[00000000]      mov [calculo1],rax
+    55                                  ;resultado1 = sumatoria 
+    56                                  
+    57                                  ;parte derecha
+    58                                  ;N2 =rax
+    59 00000024 488B0425[00000000]      mov rax,[N]
+    60 0000002C 48FFC0                  INC rax ;N+1
+    61                                  
+    62                                  ;N3 =rbx
+    63 0000002F 488B1C25[00000000]      mov rbx,[N]
+    64                                  
+    65 00000037 48F7EB                  IMUL rbx ; N(N+1) = rax:rdx
+    66                                  
+    67 0000003A 41B802000000            Mov r8,2
+    68                                  
+    69 00000040 49F7F8                  IDIV R8
+    70                                  
+    71 00000043 48890425[08000000]      mov [calculo2],rax
+    72                                  
+    73                                  
+    74                                  ;Haciendo la demostracion 
+    75                                  
+    76 0000004B 8B0425[00000000]        mov eax, [calculo1]
+    77                                  
+    78                                  ;haciendo la resta
+    79 00000052 3B0425[08000000]        CMP eax,[calculo2]
+    80                                  ;CONDICION
+    81 00000059 7402                    JE esIgual
+    82 0000005B EB16                    JMP noSonIgual
+    83                                  
+    84                                  esIgual:
+    85 0000005D 48C70425[10000000]-     mov qword[resultado],0
+    85 00000065 00000000           
+    86 00000069 48F71425[10000000]      not qword[resultado]
+    87 00000071 EB0C                    JMP fin
+    88                                  noSonIgual:
+    89 00000073 48C70425[10000000]-     mov qword[resultado],0
+    89 0000007B 00000000           
+    90                                  
+    91                                  
+    92                                  fin:
+    93 0000007F C3                      ret
+    94                                  ;---------------------------------------
+    95                                  ;..........subrutinas....................	
+    96                                  
+    97                                  
+    98                                  
+    99                                  

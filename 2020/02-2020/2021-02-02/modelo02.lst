@@ -1,0 +1,77 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o modelo02.o modelo02.asm -l modelo02.lst
+     4                                  ;link:	   -->> gcc -o modelo02 modelo02.o
+     5                                  ;run:      -->> modelo02
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: modelo02.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15                                  
+    16 00000000 7F0400003D68FF0C3F-     a dd 1151,218064957,319,-2200,20764,9362202,-609,20,11990,-55
+    16 00000009 01000068F7FFFF1C51-
+    16 00000012 00001ADB8E009FFDFF-
+    16 0000001B FF14000000D62E0000-
+    16 00000024 C9FFFFFF           
+    17                                  
+    18                                  segment .bss
+    19                                  ;Block Started by Symbol(BSS) 
+    20                                  ;aqui van las variables declaradas pero sin inicializar
+    21                                  
+    22 00000000 <res 00000004>          promedio resd 1
+    23                                  segment .text 
+    24                                  
+    25                                  global main 					
+    26                                  main:	
+    27                                  ;etiqueta que indica el comienzo del programa principal
+    28                                  ;aqui van las instrucciones
+    29                                  
+    30 00000000 4831C0                  XOR  RAX,RAX
+    31 00000003 4831DB                  XOR  RBX,RBX
+    32 00000006 4831C9                  XOR  RCX,RCX
+    33 00000009 4831D2                  XOR  RDX,RDX
+    34 0000000C 4831F6                  xor  rsi,rsi
+    35 0000000F 4D31C0                  xor r8,r8
+    36 00000012 4D31C9                  xor r9,r9
+    37 00000015 48BB-                   mov rbx,a ; direccion de a en rbx
+    37 00000017 [0000000000000000] 
+    38                                  
+    39 0000001F B90A000000              mov rcx,10
+    40                                  ciclo:
+    41                                  ;sacar el elemento actual
+    42 00000024 8B0433                  mov eax,[rbx+rsi]
+    43                                  ; Preguntar si es el elemento un positivo
+    44                                  
+    45 00000027 D1C0                    ROL eax,1       ;CMP EAX,0
+    46                                  				;JG esPositivo
+    47                                  ; en el carry tenemos si es positivo o negativo
+    48 00000029 7302                    JNC esPositivo
+    49                                  ;else
+    50 0000002B EB08                    JMP esNegativo
+    51                                  esPositivo:
+    52 0000002D D1C8                    ror eax,1
+    53 0000002F 4101C0                  add r8d,eax ; en r8 la suma
+    54 00000032 41FFC1                  inc r9d ; en r9 n de elementos
+    55                                  esNegativo:
+    56                                  
+    57 00000035 4883C604                add rsi,4
+    58 00000039 E2E9                    loop ciclo
+    59                                  
+    60 0000003B 4489C0                  mov eax,r8d
+    61 0000003E 99                      cdq
+    62                                  
+    63 0000003F 41F7F9                  idiv r9d
+    64                                  
+    65 00000042 890425[00000000]        mov [promedio],eax
+    66                                  
+    67 00000049 C3                      ret
+    68                                  ;---------------------------------------
+    69                                  ;..........subrutinas....................	
+    70                                  
+    71                                  
+    72                                  

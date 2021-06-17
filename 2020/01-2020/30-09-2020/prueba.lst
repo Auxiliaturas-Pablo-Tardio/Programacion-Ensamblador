@@ -1,0 +1,83 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o prueba.o prueba.asm -l prueba.lst
+     4                                  ;link:	   -->> gcc64 -o prueba prueba.o
+     5                                  ;run:      -->> prueba
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: prueba.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15                                  
+    16 00000000 3AC0729A71DEE1FE        	x dq -80538738812075974
+    17 00000008 AB4B8557E5C31D01        	y dq 80435758145817515
+    18 00000010 4FA98D7A90C52C00        	z dq 12602123297335631
+    19                                  segment .bss
+    20                                  ;Block Started by Symbol(BSS) 
+    21                                  ;aqui van las variables declaradas pero sin inicializar
+    22                                  	
+    23                                  
+    24                                  segment .text 
+    25                                  
+    26                                  global main 					
+    27                                  main:	
+    28                                  ;etiqueta que indica el comienzo del programa principal
+    29                                  ;aqui van las instrucciones
+    30 00000000 FF3425[00000000]        PUSH qword[x]
+    31 00000007 E840000000              call elevar
+    32 0000000C 83C408                  add esp,8
+    33 0000000F 4989C0                  MOV R8,RAX
+    34 00000012 4989D1                  MOV R9,RDX
+    35                                  
+    36 00000015 FF3425[08000000]        PUSH qword[y]
+    37 0000001C E82B000000              call elevar
+    38 00000021 83C408                  add esp,8
+    39 00000024 4989C2                  MOV R10,RAX
+    40 00000027 4989D3                  MOV R11,RDX
+    41                                  
+    42 0000002A FF3425[10000000]        PUSH qword[z]
+    43 00000031 E816000000              call elevar
+    44 00000036 83C408                  add esp,8	
+    45 00000039 4989C4                  MOV R12,RAX
+    46 0000003C 4989D5                  MOV R13,RDX
+    47                                  
+    48                                  
+    49                                  
+    50 0000003F 4D01D0                  ADD R8,R10 
+    51 00000042 4D11D9                  ADC R9,R11
+    52                                  
+    53                                  ;XOR RAX,RAX,
+    54                                  ;XOR RBX,RBX
+    55                                  ;mov AL,255
+    56                                  ;MOV BL,255
+    57                                  ;ADD AL,BL
+    58                                  ;ADC AH,BH
+    59                                  
+    60 00000045 4D01E0                  ADD R8,R12
+    61 00000048 4D11E9                  ADC R9,R13
+    62                                   
+    63 0000004B C3                      ret
+    64                                  ;---------------------------------------
+    65                                  ;..........subrutinas....................	
+    66                                  
+    67                                  elevar:
+    68 0000004C 55                      push rbp
+    69 0000004D 4889E5                  mov rbp,rsp
+    70                                  
+    71 00000050 B903000000              mov rcx,3
+    72                                  ;base ebp+16
+    73 00000055 488B5D10                MOV RBX,[RBP+16]
+    74 00000059 B801000000              MOV RAX,1
+    75                                  ciclo:
+    76                                  
+    77 0000005E 48F7EB                  IMUL RBX
+    78                                  
+    79 00000061 E2FB                    loop ciclo
+    80                                  
+    81 00000063 C9                      leave 
+    82 00000064 C3                      ret
+    83                                  

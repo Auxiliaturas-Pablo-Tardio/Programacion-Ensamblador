@@ -1,0 +1,56 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o vectores.o vectores.asm -l vectores.lst
+     4                                  ;link:	   -->> gcc -o vectores vectores.o
+     5                                  ;run:      -->> vectores
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: vectores.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15 00000000 020001000900000006-     registro dw 2,1,9,0,6,4,8,5,7
+    15 00000009 000400080005000700 
+    16                                  		
+    17                                  segment .bss
+    18                                  ;Block Started by Symbol(BSS) 
+    19                                  ;aqui van las variables declaradas pero sin inicializar
+    20 00000000 <res 00000002>          resultado resw 1
+    21                                  
+    22                                  segment .text 
+    23                                  
+    24                                  global main 					
+    25                                  main:	
+    26                                  ;etiqueta que indica el comienzo del programa principal
+    27                                  ;aqui van las instrucciones
+    28                                  
+    29 00000000 48B8-                   mov rax,registro
+    29 00000002 [0000000000000000] 
+    30 0000000A 668340020A              add word[rax+2],10
+    31 0000000F 668B5802                mov bx,[rax+2]
+    32 00000013 66011C25[00000000]      add [resultado],bx
+    33                                  
+    34                                  
+    35 0000001B 668340060A              add word[rax+6],10
+    36 00000020 668B5806                mov bx,[rax+6]
+    37 00000024 66011C25[00000000]      add [resultado],bx
+    38                                  
+    39                                  
+    40 0000002C 6683400E0A              add word[rax+14],10
+    41 00000031 668B580E                mov bx,[rax+14]
+    42 00000035 66011C25[00000000]      add [resultado],bx
+    43                                  
+    44                                  
+    45 0000003D 668340100A              add word[rax+16],10
+    46 00000042 668B5810                mov bx,[rax+16]
+    47 00000046 66011C25[00000000]      add [resultado],bx
+    48                                  	
+    49 0000004E C3                      ret
+    50                                  ;---------------------------------------
+    51                                  ;..........subrutinas....................	
+    52                                  
+    53                                  
+    54                                  

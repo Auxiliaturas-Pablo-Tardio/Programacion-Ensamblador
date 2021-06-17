@@ -1,0 +1,42 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o P1.o P1.asm -l P1.lst
+     4                                  ;link:	   -->> gcc -o P1 P1.o
+     5                                  ;run:      -->> P1
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: P1.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf,gets		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15 00000000 686F6C6100              m1 db "hola",0
+    16 00000005 257300                  formato db "%s",0		
+    17                                  segment .bss
+    18                                  ;Block Started by Symbol(BSS) 
+    19                                  ;aqui van las variables declaradas pero sin inicializar
+    20                                  
+    21 00000000 <res 00000064>          cadena resb 100
+    22                                  segment .text 
+    23                                  
+    24                                  global main 					
+    25                                  main:	
+    26                                  ;etiqueta que indica el comienzo del programa principal
+    27                                  ;aqui van las instrucciones
+    28                                  
+    29 00000000 4883C420                add rsp,0x20
+    30 00000004 48B9-                   mov rcx,formato
+    30 00000006 [0500000000000000] 
+    31 0000000E 48BA-                   mov rdx,cadena
+    31 00000010 [0000000000000000] 
+    32 00000018 E8(00000000)            call scanf
+    33 0000001D 4883EC20                sub rsp,0x20
+    34                                  	
+    35 00000021 C3                      ret
+    36                                  ;---------------------------------------
+    37                                  ;..........subrutinas....................	
+    38                                  
+    39                                  
+    40                                  

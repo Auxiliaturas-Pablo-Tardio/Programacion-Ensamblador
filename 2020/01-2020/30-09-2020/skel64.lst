@@ -1,0 +1,142 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o P1.o P1.asm -l P1.lst
+     4                                  ;link:	   -->> gcc64 -o P1 P1.o
+     5                                  ;run:      -->> P1
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: P1.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15 00000000 3AC0729A71DEE1FE        x dq -80538738812075974
+    16 00000008 AB4B8557E5C31D01        y dq 80435758145817515
+    17 00000010 4FA98D7A90C52C00        z dq 12602123297335631
+    18 00000018 656C20726573756C74-     m1 db "el resultado es : %d",0	
+    18 00000021 61646F206573203A20-
+    18 0000002A 256400             
+    19                                  
+    20 0000002D 656C20726573756C74-     m2 db "el resultado es incorrecto",0
+    20 00000036 61646F20657320696E-
+    20 0000003F 636F72726563746F00 
+    21 00000048 656C20726573756C74-     m3 db "el resultado esta verificado",0	
+    21 00000051 61646F206573746120-
+    21 0000005A 766572696669636164-
+    21 00000063 6F00               
+    22                                  segment .bss
+    23                                  ;Block Started by Symbol(BSS) 
+    24                                  ;aqui van las variables declaradas pero sin inicializar
+    25 00000000 <res 00000008>          XALTA RESQ 1
+    26 00000008 <res 00000008>          XBAJA RESQ 1
+    27 00000010 <res 00000008>          YALTA RESQ 1
+    28 00000018 <res 00000008>          YBAJA RESQ 1
+    29 00000020 <res 00000008>          ZALTA RESQ 1
+    30 00000028 <res 00000008>          ZBAJA RESQ 1
+    31 00000030 <res 00000008>          K resq 1
+    32                                  
+    33                                  segment .text 
+    34                                  
+    35                                  global main 					
+    36                                  main:	
+    37                                  ;etiqueta que indica el comienzo del programa principal
+    38                                  ;aqui van las instrucciones
+    39                                  
+    40 00000000 488B0425[00000000]      mov rax,[x]
+    41 00000008 488B0425[08000000]      mov rax,[y]
+    42 00000010 488B0425[10000000]      mov rax,[z]
+    43 00000018 4831C0                  xor rax,rax
+    44                                  
+    45 0000001B FF3425[00000000]        push qword[x]
+    46 00000022 E8CD000000              call elevarCubo
+    47 00000027 4883EC08                SUB RSP,8
+    48                                  
+    49 0000002B 48891425[00000000]      MOV [XALTA],RDX
+    50 00000033 48890425[08000000]      MOV [XBAJA],RAX
+    51                                  
+    52 0000003B FF3425[08000000]        push qword[y]
+    53 00000042 E8AD000000              call elevarCubo
+    54 00000047 4883EC08                SUB RSP,8
+    55                                  
+    56 0000004B 48891425[10000000]      MOV [YALTA],RDX
+    57 00000053 48890425[18000000]      MOV [YBAJA],RAX
+    58                                  
+    59 0000005B FF3425[10000000]        push qword[z]
+    60 00000062 E88D000000              call elevarCubo
+    61 00000067 4883EC08                SUB RSP,8
+    62                                  
+    63 0000006B 48891425[20000000]      MOV [ZALTA],RDX
+    64 00000073 48890425[28000000]      MOV [ZBAJA],RAX
+    65                                  
+    66 0000007B 48030425[08000000]      ADD RAX,[XBAJA] 
+    67 00000083 48131425[00000000]      adC rdx,[XALTA]
+    68                                  
+    69 0000008B 48030425[18000000]      ADD RAX,[YBAJA]
+    70 00000093 48131425[10000000]      adC rdx,[YALTA]
+    71                                  
+    72                                  
+    73 0000009B 48890425[30000000]      MOV [K],RAX
+    74 000000A3 48833C25[30000000]-     cmp qword[K],42
+    74 000000AB 2A                 
+    75 000000AC 7402                    JE correcto
+    76                                  
+    77 000000AE EB15                    JMP incorrecto
+    78                                  correcto:
+    79 000000B0 48B9-                   MOV RCX,m3
+    79 000000B2 [4800000000000000] 
+    80                                  
+    81                                  ;PUSH QWORD[K]
+    82                                  ;PUSH m1
+    83 000000BA E8(00000000)            CALL printf
+    84 000000BF 4883C40A                add rsp,10	
+    85 000000C3 EB13                    jmp fin
+    86                                  
+    87                                  incorrecto:
+    88                                  
+    89 000000C5 48B9-                   MOV RCX,m2
+    89 000000C7 [2D00000000000000] 
+    90                                  
+    91                                  ;PUSH QWORD[K]
+    92                                  ;PUSH m1
+    93 000000CF E8(00000000)            CALL printf
+    94 000000D4 4883C40A                add rsp,10	
+    95                                  
+    96                                  fin:
+    97                                  
+    98 000000D8 488B1425[30000000]      MOV RDX,QWORD[K]
+    99 000000E0 48B9-                   MOV RCX,m1
+    99 000000E2 [1800000000000000] 
+   100                                  
+   101                                  ;PUSH QWORD[K]
+   102                                  ;PUSH m1
+   103 000000EA E8(00000000)            CALL printf
+   104 000000EF 4883C414                add rsp,20	
+   105                                  	
+   106                                  	
+   107 000000F3 C3                      ret
+   108                                  ;---------------------------------------
+   109                                  ;..........subrutinas....................	
+   110                                  
+   111                                  elevarCubo:
+   112                                  ; PROLOGO
+   113 000000F4 55                      push rbp
+   114 000000F5 4889E5                  mov rbp,rsp
+   115                                  
+   116 000000F8 488B5D10                Mov rbx, [rbp+16] ; mover a rbx la variable de entrada
+   117 000000FC B801000000              MOV RAX,1
+   118 00000101 B903000000              mov rcx,3
+   119                                  ciclo:
+   120                                  
+   121 00000106 48F7EB                  IMUL rbx
+   122                                  
+   123 00000109 E2FB                    loop ciclo
+   124                                  
+   125                                  ;EPILOGO
+   126 0000010B 4889EC                  mov rsp,rbp
+   127 0000010E 5D                      pop rbp
+   128 0000010F C3                      ret
+   129                                  
+   130                                  
+   131                                  

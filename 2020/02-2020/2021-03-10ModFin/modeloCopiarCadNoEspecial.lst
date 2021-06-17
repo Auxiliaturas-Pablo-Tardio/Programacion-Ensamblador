@@ -1,0 +1,185 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o modeloCopiarCadNoEspecial.o modeloCopiarCadNoEspecial.asm -l modeloCopiarCadNoEspecial.lst
+     4                                  ;link:	   -->> gcc -o modeloCopiarCadNoEspecial modeloCopiarCadNoEspecial.o
+     5                                  ;run:      -->> modeloCopiarCadNoEspecial
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: modeloCopiarCadNoEspecial.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf,gets,strlen	
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15 00000000 496E67726573617220-     m1 db "Ingresar la cadena de caracteres(max 100 caracteres)",0
+    15 00000009 6C6120636164656E61-
+    15 00000012 206465206361726163-
+    15 0000001B 7465726573286D6178-
+    15 00000024 203130302063617261-
+    15 0000002D 6374657265732900   
+    16 00000035 6C61206E7565766120-     m2 db "la nueva cadena copiada es: %s",0
+    16 0000003E 636164656E6120636F-
+    16 00000047 70696164612065733A-
+    16 00000050 20257300           
+    17 00000054 257300                  fmt db "%s",0
+    18                                  
+    19                                  segment .bss
+    20                                  ;Block Started by Symbol(BSS) 
+    21                                  ;aqui van las variables declaradas pero sin inicializar
+    22 00000000 <res 00000064>          cad1 resb 100 
+    23 00000064 <res 00000064>          cad2 resb 100
+    24                                  
+    25                                  segment .text 
+    26                                  
+    27                                  global main 					
+    28                                  main:	
+    29                                  ;etiqueta que indica el comienzo del programa principal
+    30                                  ;aqui van las instrucciones
+    31                                  
+    32                                  ;imprimir mensaje de escaneo
+    33                                  
+    34 00000000 4883EC20                sub rsp,0x20
+    35 00000004 48B9-                   	mov rcx,m1
+    35 00000006 [0000000000000000] 
+    36 0000000E E8(00000000)            	call printf
+    37 00000013 4883C420                add rsp,0x20
+    38                                  
+    39                                  ; Escaneo de cadena
+    40 00000017 4883EC20                sub rsp,0x20
+    41 0000001B 48B9-                   	mov rcx,cad1
+    41 0000001D [0000000000000000] 
+    42 00000025 E8(00000000)            	call gets
+    43 0000002A 4883C420                add rsp,0x20
+    44                                  
+    45 0000002E 4883EC20                sub rsp,0x20
+    46 00000032 48B9-                   	mov rcx, cad1
+    46 00000034 [0000000000000000] 
+    47 0000003C E8(00000000)            	call strlen
+    48 00000041 4883C420                add rsp, 0x20
+    49                                  ; RAX 
+    50                                  
+    51                                  
+    52 00000045 4883EC20                sub rsp,0x20
+    53 00000049 48B9-                   	mov rcx,cad1 
+    53 0000004B [0000000000000000] 
+    54 00000053 48BA-                   	mov rdx,cad2
+    54 00000055 [6400000000000000] 
+    55 0000005D 4989C0                  	mov r8,rax
+    56 00000060 E826000000              	call copyCad
+    57 00000065 4883C420                add rsp,0x20
+    58                                  
+    59                                  ;imprimos el resultado
+    60 00000069 4883EC20                sub rsp,32
+    61 0000006D 48BA-                   	mov rdx,cad2
+    61 0000006F [6400000000000000] 
+    62 00000077 48B9-                   	mov rcx,m2
+    62 00000079 [3500000000000000] 
+    63 00000081 E8(00000000)            	call printf
+    64 00000086 4883C420                add rsp,32
+    65 0000008A C3                      ret
+    66                                  ;---------------------------------------
+    67                                  ;..........subrutinas....................	
+    68                                  
+    69                                  copyCad:
+    70                                  ; Usamos el espacio sombra
+    71 0000008B 48894C2408              mov [rsp+8],rcx    ;1er variable
+    72 00000090 4889542410              mov	[rsp+16],rdx 	;2da variable
+    73 00000095 4C89442418              mov [rsp+24],r8		;3er variable
+    74 0000009A 488B4C2418              mov rcx,[rsp+24]
+    75 0000009F 4C8B5C2408              mov r11,[rsp+8] ; direccion de vector origen  
+    76                                  
+    77 000000A4 488B542410              mov rdx,[rsp+16] ; direccion de arreglo destino
+    78                                  
+    79                                  ciclo:
+    80 000000A9 51                      	push rcx
+    81                                  	; extraer elemento actual
+    82 000000AA 458A23                  	mov r12b,[r11]
+    83                                  	
+    84                                  	; comprobar si es letra
+    85 000000AD 4883EC20                	sub rsp,0x20
+    86 000000B1 490FB6CC                		movzx rcx,r12b
+    87 000000B5 E832000000              		call esLetra
+    88 000000BA 4883C420                	add rsp,0x20
+    89                                  	; devuelve un boolean en rax, 0 o 1
+    90 000000BE 4883F801                	CMP RAX,1
+    91 000000C2 7402                    	JE seCumplioLetra
+    92 000000C4 EB08                    	JMP elseSeCumplioLetra
+    93                                  	
+    94                                  	seCumplioLetra:
+    95                                  	seCumplioNumero:
+    96                                  	; movemos el elemento actual al vector copia
+    97 000000C6 448822                  		mov [rdx],r12b
+    98 000000C9 48FFC2                  		inc rdx
+    99 000000CC EB17                    		JMP finCondiciones
+   100                                  	elseSeCumplioLetra:	
+   101                                  	; comprobar si es num
+   102 000000CE 4883EC20                	sub rsp,0x20
+   103 000000D2 490FB6CC                		movzx rcx,r12b
+   104 000000D6 E84B000000              		call esNum
+   105 000000DB 4883C420                	add rsp,0x20
+   106 000000DF 4883F801                	CMP RAX,1
+   107 000000E3 74E1                    	JE seCumplioNumero
+   108                                  	finCondiciones:
+   109                                  	
+   110 000000E5 49FFC3                  inc r11
+   111 000000E8 59                      pop rcx
+   112 000000E9 E2BE                    loop ciclo
+   113                                  
+   114                                  
+   115                                  
+   116 000000EB C3                      ret
+   117                                  
+   118                                  esLetra:
+   119                                  	; Usamos el espacio sombra
+   120 000000EC 48894C2408              mov [rsp+8],rcx    ;1er variable nuestro caracter
+   121 000000F1 48837C240841             CMP qword[rsp+8],0x41 ; comienzo de Mayusculas
+   122                                   ;>=
+   123 000000F7 7D02                     JGE puedeSerMayuscula
+   124 000000F9 EB25                     JMP noEsLetra			;noEsMayuscula
+   125                                   
+   126                                   puedeSerMayuscula:
+   127                                   ;cierro el rango
+   128 000000FB 48837C24085A             CMP qword[rsp+8],0x5A
+   129                                   ;<=
+   130 00000101 7E16                     JLE esMayuscula
+   131 00000103 EB00                     JMP puedeSerMinuscula
+   132                                   puedeSerMinuscula:
+   133 00000105 48837C240861            	CMP qword[rsp+8],0x61
+   134 0000010B 7D02                    	JGE inicioMinuscula
+   135 0000010D EB11                    	JMP noEsLetra
+   136                                  		inicioMinuscula:
+   137                                  		;cierro el rango
+   138 0000010F 48837C24087A            			cmp qword[rsp+8],0x7A
+   139 00000115 7E02                    			JLE esMinuscula
+   140 00000117 EB07                    			JMP noEsLetra
+   141                                  	
+   142                                  		esMayuscula:
+   143                                  		esMinuscula:
+   144 00000119 B801000000              		mov rax,1 ;return true
+   145 0000011E EB05                    		JMP finEsLetra
+   146                                  		noEsLetra:
+   147 00000120 B800000000              		mov rax,0 ; return false
+   148                                  finEsLetra:
+   149 00000125 C3                      ret
+   150                                  
+   151                                  esNum:
+   152 00000126 48894C2408              mov [rsp+8],rcx    ;1er variable nuestro caracter
+   153 0000012B 48837C240830             CMP qword[rsp+8],0x30
+   154                                   ;>=
+   155 00000131 7D02                     JGE puedeSerNumero
+   156 00000133 EB11                     JMP noEsNumero
+   157                                   puedeSerNumero:
+   158                                  	;cierre del rango
+   159 00000135 48837C240839            	cmp qword[rsp+8],0x39
+   160 0000013B 7E02                    	JLE esNumero
+   161 0000013D EB07                    	JMP noEsNumero
+   162                                  	
+   163                                  esNumero:
+   164 0000013F B801000000              mov rax,1
+   165 00000144 EB05                    jmp finEsNum
+   166                                  noEsNumero:
+   167 00000146 B800000000              mov rax,0	
+   168                                   finEsNum:
+   169 0000014B C3                      ret
+   170                                  

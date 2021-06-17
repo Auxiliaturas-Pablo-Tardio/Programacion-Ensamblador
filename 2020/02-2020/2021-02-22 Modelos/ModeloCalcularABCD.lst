@@ -1,0 +1,150 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o ModeloCalcularABCD.o ModeloCalcularABCD.asm -l ModeloCalcularABCD.lst
+     4                                  ;link:	   -->> gcc -o ModeloCalcularABCD ModeloCalcularABCD.o
+     5                                  ;run:      -->> ModeloCalcularABCD
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: ModeloCalcularABCD.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf,gets	
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15                                  ;Var de 32 bits double
+    16 00000000 256400                  formatoDecimal db "%d",0
+    17 00000003 496E67726573617220-     mA db "Ingresar el valor de A: ",0
+    17 0000000C 656C2076616C6F7220-
+    17 00000015 646520413A2000     
+    18 0000001C 496E67726573617220-     mB db "Ingresar el valor de B: ",0
+    18 00000025 656C2076616C6F7220-
+    18 0000002E 646520423A2000     
+    19 00000035 496E67726573617220-     mC db "Ingresar el valor de C: ",0
+    19 0000003E 656C2076616C6F7220-
+    19 00000047 646520433A2000     
+    20 0000004E 456C20726573756C74-     mD db "El resultado de D: %d ",0
+    20 00000057 61646F20646520443A-
+    20 00000060 2025642000         
+    21                                  segment .bss
+    22                                  ;Block Started by Symbol(BSS) 
+    23                                  ;aqui van las variables declaradas pero sin inicializar
+    24 00000000 <res 00000004>          a resd 1
+    25 00000004 <res 00000004>          b resd 1
+    26 00000008 <res 00000004>          c resd 1
+    27 0000000C <res 00000004>          d resd 1
+    28                                  segment .text 
+    29                                  
+    30                                  global main 					
+    31                                  main:	
+    32                                  ;etiqueta que indica el comienzo del programa principal
+    33                                  ;aqui van las instrucciones
+    34                                  ;PASO 1 escanear/introducir variables
+    35                                  
+    36                                  ;printF(&mensaje)
+    37 00000000 4883EC20                sub rsp,0x20
+    38 00000004 48B9-                   	mov rcx, mA
+    38 00000006 [0300000000000000] 
+    39 0000000E E8(00000000)            	call printf
+    40 00000013 4883C420                add rsp, 0x20
+    41                                  ; ModeloCalcularABCD(&formato, &variableDestino)
+    42                                  
+    43 00000017 4883EC20                sub rsp,0x20
+    44 0000001B 48B9-                   	mov rcx, formatoDecimal
+    44 0000001D [0000000000000000] 
+    45 00000025 48BA-                   	mov rdx, a
+    45 00000027 [0000000000000000] 
+    46 0000002F E8(00000000)            	call scanf
+    47 00000034 4883C420                add rsp, 0x20
+    48                                  
+    49                                  ;printF(&mensaje)
+    50 00000038 4883EC20                sub rsp,0x20
+    51 0000003C 48B9-                   	mov rcx, mB
+    51 0000003E [1C00000000000000] 
+    52 00000046 E8(00000000)            	call printf
+    53 0000004B 4883C420                add rsp, 0x20
+    54                                  
+    55 0000004F 4883EC20                sub rsp,0x20
+    56 00000053 48B9-                   	mov rcx, formatoDecimal
+    56 00000055 [0000000000000000] 
+    57 0000005D 48BA-                   	mov rdx, b
+    57 0000005F [0400000000000000] 
+    58 00000067 E8(00000000)            	call scanf
+    59 0000006C 4883C420                add rsp, 0x20
+    60                                  
+    61                                  ;printF(&mensaje)
+    62 00000070 4883EC20                sub rsp,0x20
+    63 00000074 48B9-                   	mov rcx, mC
+    63 00000076 [3500000000000000] 
+    64 0000007E E8(00000000)            	call printf
+    65 00000083 4883C420                add rsp, 0x20
+    66                                  
+    67 00000087 4883EC20                sub rsp,0x20
+    68 0000008B 48B9-                   	mov rcx, formatoDecimal
+    68 0000008D [0000000000000000] 
+    69 00000095 48BA-                   	mov rdx, c
+    69 00000097 [0800000000000000] 
+    70 0000009F E8(00000000)            	call scanf
+    71 000000A4 4883C420                add rsp, 0x20
+    72                                  
+    73                                  ;Creamos la subrutina calcular(a,b,c)
+    74 000000A8 4883EC20                sub rsp,0x20
+    75 000000AC 488B0C25[00000000]      	mov rcx,[a]
+    76 000000B4 488B1425[04000000]      	mov rdx,[b]
+    77 000000BC 4C8B0425[08000000]      	mov r8,[c]
+    78 000000C4 E82B000000              	call calcular
+    79 000000C9 4883C420                add rsp, 0x20
+    80                                  
+    81                                  ; RETURN EAX
+    82                                  
+    83 000000CD 890425[0C000000]        MOV [d],eax
+    84                                  ;printF(&mensaje,variable)
+    85 000000D4 4883EC20                sub rsp,0x20
+    86 000000D8 48B9-                   	mov rcx, mD
+    86 000000DA [4E00000000000000] 
+    87 000000E2 488B1425[0C000000]      	mov rdx,[d]
+    88 000000EA E8(00000000)            	call printf
+    89 000000EF 4883C420                add rsp, 0x20
+    90                                  
+    91 000000F3 C3                      ret
+    92                                  ;---------------------------------------
+    93                                  ;..........subrutinas....................	
+    94                                  
+    95                                  calcular:
+    96                                  ;STACK
+    97                                  ;INSTRUCCIONES DE CADENA MOVSB
+    98                                  	;rcx,[a]
+    99                                  	;rdx,[b]
+   100                                  	;r8,[c]
+   101                                  		;<<  SAL---SHL
+   102                                  	; 1 a<<3
+   103 000000F4 C1E103                  	sal ecx,3
+   104                                  	; 2 -b*8
+   105 000000F7 4189D3                  	mov r11d,edx
+   106 000000FA 41BA08000000            	mov r10d,8
+   107 00000100 41F7DB                  	neg r11d
+   108 00000103 450FAFDA                	IMUL r11d,r10d
+   109                                  	
+   110                                  	;3 b-c
+   111 00000107 4189D4                  	mov r12d,edx
+   112 0000010A 4529C4                  	sub r12d,r8d
+   113                                  	;4 1 and 2
+   114 0000010D 4421D9                  	and ecx,r11d
+   115                                  	;5  3 elevado (en este caso) a la 3
+   116 00000110 450FAFE4                	imul r12d,r12d
+   117 00000114 450FAFE4                	imul r12d,r12d
+   118                                  	;6 4 entre 5
+   119                                  	
+   120 00000118 89C8                    	mov eax,ecx
+   121                                  	;convertir de 32 a 64 para la division
+   122 0000011A 99                      	cdq ; extiende de eax a edx:eax
+   123 0000011B 41F7FC                  	idiv r12d
+   124                                  	
+   125                                  	
+   126                                  	
+   127                                  
+   128                                  
+   129 0000011E C3                      ret
+   130                                  
+   131                                  
+   132                                  

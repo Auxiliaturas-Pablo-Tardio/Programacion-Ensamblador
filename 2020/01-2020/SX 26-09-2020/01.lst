@@ -1,0 +1,41 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o 01.o 01.asm -l 01.lst
+     4                                  ;link:	   -->> gcc -o 01 01.o
+     5                                  ;run:      -->> 01
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: 01.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15                                  
+    16                                  		
+    17                                  segment .bss
+    18                                  ;Block Started by Symbol(BSS) 
+    19                                  ;aqui van las variables declaradas pero sin inicializar
+    20                                  
+    21                                  
+    22                                  segment .text 
+    23                                  
+    24                                  global main 					
+    25                                  main:	
+    26                                  ;etiqueta que indica el comienzo del programa principal
+    27                                  ;aqui van las instrucciones
+    28                                  
+    29 00000000 B011                    MOV AL,0B0001_0001
+    30 00000002 B4E8                    MOV AH,0B1110_1000
+    31 00000004 B3C0                    MOV BL,0B1100_0000
+    32 00000006 B7B8                    MOV BH,0B1011_1000
+    33                                  
+    34                                  
+    35                                  	
+    36 00000008 C3                      ret
+    37                                  ;---------------------------------------
+    38                                  ;..........subrutinas....................	
+    39                                  
+    40                                  
+    41                                  

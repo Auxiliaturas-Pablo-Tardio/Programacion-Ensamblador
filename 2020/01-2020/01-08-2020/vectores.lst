@@ -1,0 +1,61 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o P1.o P1.asm -l P1.lst
+     4                                  ;link:	   -->> gcc64 -o P1 P1.o
+     5                                  ;run:      -->> P1
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: P1.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15 00000000 2003                    a dw 800
+    16 00000002 020406080A              vector db 2,4,6,8,10
+    17 00000007 02000400060008000A-     vectorWord dw 2,4,6,8,10
+    17 00000010 00                 
+    18 00000011 0200000004000000        vectorDouble dd 2,4
+    19                                  segment .bss
+    20                                  		
+    21                                  segment .bss
+    22                                  ;Block Started by Symbol(BSS) 
+    23                                  ;aqui van las variables declaradas pero sin inicializar
+    24                                  
+    25                                  
+    26                                  segment .text 
+    27                                  
+    28                                  global main 					
+    29                                  main:	
+    30                                  ;etiqueta que indica el comienzo del programa principal
+    31                                  ;aqui van las instrucciones
+    32                                  
+    33 00000000 48BB-                   mov rbx,vectorWord 
+    33 00000002 [0700000000000000] 
+    34 0000000A BA00000000              mov rdx,0
+    35                                  ;manejamos el vector
+    36                                  ;sumar todos los elementos
+    37                                  ;sin while
+    38                                  ;ax=0
+    39 0000000F 66038412[07000000]      add ax, [vectorWord+rdx*2] ;ax= [a+0*2]
+    40 00000017 48FFC2                  inc rdx
+    41                                  
+    42 0000001A 66038412[07000000]      add ax, [vectorWord+rdx*2] ;ax= [a+1*2]
+    43 00000022 48FFC2                  inc rdx
+    44                                  
+    45 00000025 66038412[07000000]      add ax, [vectorWord+rdx*2] ;ax= [a+2*2]
+    46 0000002D 48FFC2                  inc rdx
+    47                                  
+    48 00000030 66038412[07000000]      add ax, [vectorWord+rdx*2] ;ax= [a+3*2]
+    49 00000038 48FFC2                  inc rdx
+    50                                  
+    51 0000003B C3                      ret
+    52                                  
+    53                                  	
+    54 0000003C C3                      ret
+    55                                  ;---------------------------------------
+    56                                  ;..........subrutinas....................	
+    57                                  
+    58                                  
+    59                                  

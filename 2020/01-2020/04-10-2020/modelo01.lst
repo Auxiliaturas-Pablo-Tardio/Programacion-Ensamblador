@@ -1,0 +1,118 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o modelo01.o modelo01.asm -l modelo01.lst
+     4                                  ;link:	   -->> gcc -o modelo01 modelo01.o
+     5                                  ;run:      -->> modelo01
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: modelo01.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15 00000000 44332211                var dd 311223344H
+    16 00000004 256C6C6400              formato db "%lld",0
+    17 00000009 456C206D6364206465-     m1 db "El mcd de A y B ES %lld",0	
+    17 00000012 204120792042204553-
+    17 0000001B 20256C6C6400       
+    18                                  	
+    19                                  segment .bss
+    20                                  ;Block Started by Symbol(BSS) 
+    21                                  ;aqui van las variables declaradas pero sin inicializar
+    22 00000000 <res 00000008>          a resq 1
+    23 00000008 <res 00000008>          b resq 1
+    24 00000010 <res 00000008>          resultado resq 1
+    25                                  
+    26                                  
+    27                                  section .text 
+    28                                  
+    29                                  global main 					
+    30                                  main:	
+    31                                  ;etiqueta que indica el comienzo del programa principal
+    32                                  ;aqui van las instrucciones
+    33                                  
+    34 00000000 4831C0                  xor rax,rax
+    35 00000003 4831DB                  xor rbx,rbx
+    36 00000006 4831C9                  xor rcx,rcx
+    37 00000009 4831D2                  xor rdx,rdx
+    38                                  
+    39 0000000C 4883EC20                sub rsp,0x20
+    40                                  	 
+    41 00000010 48BA-                   mov rdx,a
+    41 00000012 [0000000000000000] 
+    42 0000001A 48B9-                   mov rcx,formato		
+    42 0000001C [0400000000000000] 
+    43 00000024 E8(00000000)            call scanf
+    44 00000029 4883C420                add rsp,0x20
+    45                                  
+    46 0000002D 4883EC20                sub rsp,0x20
+    47 00000031 48BA-                   mov rdx,b
+    47 00000033 [0800000000000000] 
+    48 0000003B 48B9-                   mov rcx,formato	
+    48 0000003D [0400000000000000] 
+    49 00000045 E8(00000000)            call scanf
+    50 0000004A 4883C420                add rsp,0x20
+    51                                  
+    52 0000004E 4883EC20                sub rsp,0x20
+    53                                  
+    54 00000052 488B1425[00000000]      mov rdx,[a]
+    55 0000005A 488B0C25[08000000]      mov rcx,[b]
+    56 00000062 E81F000000              call mcd
+    57 00000067 4883C420                add rsp,0x20
+    58                                  
+    59 0000006B 4883EC20                sub rsp,0x20
+    60 0000006F 4889C2                  mov rdx,rax
+    61 00000072 48B9-                   mov rcx,m1
+    61 00000074 [0900000000000000] 
+    62 0000007C E8(00000000)            call printf
+    63                                  
+    64 00000081 4883C420                add rsp,0x20
+    65                                  
+    66 00000085 C3                      ret
+    67                                  ;---------------------------------------
+    68                                  ;..........subrutinas....................	
+    69                                  
+    70                                  mcd:
+    71                                  ; menor de dos numeros
+    72 00000086 4989C8                  mov r8,rcx ;b
+    73 00000089 4989D1                  mov r9,rdx ;a
+    74 0000008C 4D39C1                  cmp r9,r8
+    75 0000008F 7C02                    JL aEsMenor
+    76 00000091 EB05                    JMP bEsMenor
+    77                                  aEsMenor:
+    78                                  
+    79 00000093 4C89C9                  mov rcx,r9
+    80 00000096 EB03                    JMP fin
+    81                                  bEsMenor:
+    82 00000098 4C89C1                  mov rcx,r8
+    83                                  ; rcx ya esta con b
+    84                                  fin:
+    85 0000009B BB01000000              mov rbx,1 ;contador
+    86                                  ciclo:
+    87 000000A0 4C89C0                  mov rax,r8 ; b
+    88 000000A3 4899                    cqo 
+    89 000000A5 48F7FB                  idiv rbx
+    90 000000A8 4989D3                  mov r11,rdx ; primer mod
+    91                                   
+    92 000000AB 4C89C8                   mov rax,r9
+    93 000000AE 4899                     cqo
+    94 000000B0 48F7FB                   idiv rbx
+    95 000000B3 4989D4                   mov r12,rdx ;segundo mod
+    96                                   
+    97 000000B6 4D39E3                   cmp r11,r12
+    98 000000B9 7402                     JZ guardamosMCD
+    99 000000BB EB03                     JMP finalmcd
+   100                                  	guardamosMCD:
+   101 000000BD 4989DA                  	mov r10,rbx 
+   102                                   finalmcd:
+   103                                   
+   104 000000C0 48FFC3                   inc rbx
+   105 000000C3 E2DB                    loop ciclo
+   106                                  
+   107 000000C5 4C89D0                  mov rax,r10
+   108                                  
+   109 000000C8 C3                      ret
+   110                                  
+   111                                  

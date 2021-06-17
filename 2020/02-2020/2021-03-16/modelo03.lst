@@ -1,0 +1,141 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o modelo03.o modelo03.asm -l modelo03.lst
+     4                                  ;link:	   -->> gcc -o modelo03 modelo03.o
+     5                                  ;run:      -->> modelo03
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: modelo03.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf,strlen,gets		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15 00000000 496E67726573617220-     m1 db "Ingresar la cadena de caracteres (maximo 100 caracteres)",0
+    15 00000009 6C6120636164656E61-
+    15 00000012 206465206361726163-
+    15 0000001B 746572657320286D61-
+    15 00000024 78696D6F2031303020-
+    15 0000002D 636172616374657265-
+    15 00000036 732900             
+    16 00000039 6C6120636164656E61-     m2 db "la cadena tiene un conjunto Balanceado",0
+    16 00000042 207469656E6520756E-
+    16 0000004B 20636F6E6A756E746F-
+    16 00000054 2042616C616E636561-
+    16 0000005D 646F00             
+    17 00000060 6C6120636164656E61-     m3 db "la cadena NO tiene un conjunto Balanceado",0
+    17 00000069 204E4F207469656E65-
+    17 00000072 20756E20636F6E6A75-
+    17 0000007B 6E746F2042616C616E-
+    17 00000084 636561646F00       
+    18 0000008A 257300                  fmt db "%s",0	
+    19                                  segment .bss
+    20                                  ;Block Started by Symbol(BSS) 
+    21                                  ;aqui van las variables declaradas pero sin inicializar
+    22 00000000 <res 00000064>          cad resb 100
+    23                                  
+    24                                  segment .text 
+    25                                  
+    26                                  global main 					
+    27                                  main:	
+    28                                  ;etiqueta que indica el comienzo del programa principal
+    29                                  ;aqui van las instrucciones
+    30                                  
+    31 00000000 4883EC20                sub rsp,32 ; espacio sombra
+    32 00000004 48B9-                   	mov rcx,m1
+    32 00000006 [0000000000000000] 
+    33 0000000E E8(00000000)            	call printf
+    34 00000013 4883C420                add rsp,32 ;
+    35                                  
+    36                                  ; escanear el mensaje
+    37                                  
+    38 00000017 4883EC20                sub rsp,32
+    39                                  
+    40 0000001B 48B9-                   	mov rcx,cad
+    40 0000001D [0000000000000000] 
+    41 00000025 E8(00000000)            	call gets
+    42 0000002A 4883C420                add rsp,32
+    43                                  
+    44 0000002E 4883EC20                sub rsp,32
+    45 00000032 48B9-                   	mov rcx,cad
+    45 00000034 [0000000000000000] 
+    46 0000003C E8(00000000)            	call strlen ; rax lenth de la cadena
+    47 00000041 4883C420                add rsp,32
+    48                                  
+    49 00000045 4883EC20                sub rsp,32
+    50 00000049 48B9-                   	mov rcx,cad
+    50 0000004B [0000000000000000] 
+    51 00000053 4889C2                  	mov rdx,rax
+    52 00000056 E843000000              	call isBalanceado
+    53 0000005B 4883C420                add rsp,32
+    54                                  ; Rax 
+    55 0000005F 4883F801                CMP RAX,1
+    56                                  ;Es balanceado
+    57 00000063 7402                    JE mBal
+    58 00000065 EB1C                    JMP mNoBal
+    59                                  mBal:
+    60 00000067 4883EC20                sub rsp,32
+    61 0000006B 48B9-                   	mov rcx,m2
+    61 0000006D [3900000000000000] 
+    62 00000075 4889C2                  	mov rdx,rax
+    63 00000078 E8(00000000)            	call printf
+    64 0000007D 4883C420                add rsp,32
+    65 00000081 EB1A                    JMP finMain
+    66                                  mNoBal:
+    67 00000083 4883EC20                sub rsp,32
+    68 00000087 48B9-                   	mov rcx,m3
+    68 00000089 [6000000000000000] 
+    69 00000091 4889C2                  	mov rdx,rax
+    70 00000094 E8(00000000)            	call printf
+    71 00000099 4883C420                add rsp,32	
+    72                                  finMain:
+    73 0000009D C3                      ret
+    74                                  ;---------------------------------------
+    75                                  ;..........subrutinas....................	
+    76                                  isBalanceado:
+    77 0000009E 48894C2408              	mov [rsp+8],rcx  ; primer par
+    78 000000A3 4889542410              	mov [rsp+16],rdx ; segundo par
+    79                                  	
+    80 000000A8 4989CC                  	mov r12,rcx ; direccion de la cadena
+    81 000000AB 4D31ED                  	xor r13,r13
+    82 000000AE 4D31FF                  	xor r15,r15 ; es el contador  de parentesis
+    83 000000B1 4889D1                  	mov rcx,rdx ; tamaño de la cadena
+    84                                  	ciclo:
+    85                                  	
+    86 000000B4 458A2C24                		mov r13b,[r12] ; extraemos el caracter actual
+    87 000000B8 4983FD28                		cmp r13,40
+    88 000000BC 7402                    		JE parentesisAbierto
+    89 000000BE EB05                    		JMP compParentCerrado
+    90                                  		parentesisAbierto:
+    91 000000C0 49FFC7                  			inc r15
+    92 000000C3 EB11                    		JMP finCiclo
+    93                                  		compParentCerrado:
+    94 000000C5 4983FD29                		cmp r13,41
+    95 000000C9 7402                    		JE esParentesisAbierto
+    96 000000CB EB09                    		JMP finCiclo
+    97                                  		esParentesisAbierto:
+    98                                  		
+    99 000000CD 49FFCF                  			dec r15
+   100                                  		;; Preguntar caso especial
+   101                                  		
+   102 000000D0 4983FFFF                			CMP r15,-1
+   103 000000D4 740B                    			JE errorParentesis
+   104                                  		 
+   105                                  		
+   106                                  		finCiclo:
+   107 000000D6 49FFC4                  	inc r12
+   108 000000D9 E2D9                    	loop ciclo
+   109 000000DB 4983FF00                cmp r15,0
+   110 000000DF 7407                    JE siSeBalanceo
+   111                                  
+   112                                  errorParentesis:
+   113 000000E1 B800000000              mov rax,0
+   114 000000E6 EB05                    jmp finBalanceo
+   115                                  siSeBalanceo:
+   116 000000E8 B801000000              mov rax,1
+   117                                  finBalanceo:	
+   118 000000ED C3                      ret
+   119                                  
+   120                                  
+   121                                  

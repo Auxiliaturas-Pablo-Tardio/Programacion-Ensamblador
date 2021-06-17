@@ -1,0 +1,47 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o skel.o skel.asm -l skel.lst
+     4                                  ;link:	   -->> gcc -o skel skel.o
+     5                                  ;run:      -->> skel
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: skel.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15 00000000 0A                      a db 10  ;byte
+    16 00000001 0004                    aword dw 0x400
+    17 00000003 20000000                adouble dd 0b100000
+    18 00000007 D007000000000000        aquad dq 2000
+    19                                  
+    20                                  		
+    21                                  segment .bss
+    22                                  ;Block Started by Symbol(BSS) 
+    23                                  ;aqui van las variables declaradas pero sin inicializar
+    24 00000000 <res 00000001>          b resb 1
+    25 00000001 <res 00000002>          bword resw 1
+    26 00000003 <res 00000004>          bdouble resd 1
+    27 00000007 <res 00000008>          bquad resq 1
+    28                                  
+    29                                  segment .text 
+    30                                  
+    31                                  global main 					
+    32                                  main:	
+    33                                  ;etiqueta que indica el comienzo del programa principal
+    34                                  ;aqui van las instrucciones
+    35 00000000 8A0425[00000000]        MOV AL, [a]
+    36 00000007 B008                    MOV AL, 8
+    37 00000009 C60425[00000000]08      MOV byte[a],8
+    38 00000011 88D8                    mov AL,BL
+    39 00000013 880425[00000000]        MOV [a], AL
+    40                                  
+    41                                  	
+    42 0000001A C3                      ret
+    43                                  ;---------------------------------------
+    44                                  ;..........subrutinas....................	
+    45                                  
+    46                                  
+    47                                  

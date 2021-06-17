@@ -1,0 +1,91 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o ejercicioSumaVect.o ejercicioSumaVect.asm -l ejercicioSumaVect.lst
+     4                                  ;link:	   -->> gcc -o ejercicioSumaVect ejercicioSumaVect.o
+     5                                  ;run:      -->> ejercicioSumaVect
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: ejercicioSumaVect.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15                                  
+    16 00000000 060000000100000007-     registro dd 6,1,7,0,6,4,9,4,7
+    16 00000009 000000000000000600-
+    16 00000012 000004000000090000-
+    16 0000001B 000400000007000000 
+    17                                  
+    18                                  hola equ 100
+    19                                  segment .bss
+    20                                  ;Block Started by Symbol(BSS) 
+    21                                  ;aqui van las variables declaradas pero sin inicializar
+    22                                  
+    23 00000000 <res 00000004>          resultado resd 1
+    24                                  segment .text 
+    25                                  
+    26                                  global main 					
+    27                                  main:	
+    28                                  ;etiqueta que indica el comienzo del programa principal
+    29                                  ;aqui van las instrucciones
+    30                                  
+    31                                  ;1er Manera = hacer pares primero, impares luego, sumando indices
+    32 00000000 31C0                    XOR EAX,EAX
+    33 00000002 B803000000              MOV EAX,3
+    34 00000007 BB04000000              mov ebx,4
+    35                                  
+    36 0000000C B864000000              mov eax,hola
+    37                                  
+    38 00000011 4831C0                  XOR RAX,RAX ; Acumulamos pares
+    39                                  
+    40 00000014 4831C9                  XOR RCX,RCX ;acumular impares
+    41                                  
+    42 00000017 4831DB                  XOR RBX,RBX ;REg base
+    43                                  
+    44 0000001A 4831FF                  Xor rdi,rdi ;Reg indices
+    45                                  
+    46 0000001D 48BB-                   MOV rbx, registro ;mov direcc
+    46 0000001F [0000000000000000] 
+    47 00000027 BF00000000              MOV rdi,0
+    48                                  
+    49 0000002C 03043B                  add eax,[RBX+rdi]; i=0
+    50                                  
+    51 0000002F 4883C718                add rdi,24
+    52                                  
+    53 00000033 03043B                  add eax,[RBX+rdi];i=6
+    54 00000036 4883C708                add rdi,8
+    55                                  
+    56 0000003A 03043B                  add eax,[RBX+rdi];i=6
+    57                                  ;eax acumulado los pares
+    58                                  
+    59                                  
+    60                                  
+    61                                  
+    62                                  
+    63 0000003D 4831C9                  XOR RCX,RCX ;acumular impares
+    64 00000040 4831FF                  Xor rdi,rdi ;Reg indices
+    65                                  
+    66 00000043 BF04000000              mov rdi, 4  ; indice 1
+    67                                  
+    68 00000048 030C3B                  add ecx,[rbx+rdi]
+    69 0000004B 4883C710                add rdi,16 ; indice 5
+    70                                  
+    71 0000004F 030C3B                  add ecx,[rbx+rdi]
+    72 00000052 4883C708                add rdi,8 ; indice 7
+    73                                  
+    74 00000056 030C3B                  add ecx,[rbx+rdi]
+    75                                  
+    76                                  ;ecx, acumulado los impares
+    77 00000059 29C1                    sub ecx,eax
+    78                                  ; resultado := ecx;
+    79 0000005B 890C25[00000000]        mov [resultado],ecx
+    80                                  
+    81                                  
+    82 00000062 C3                      ret
+    83                                  ;---------------------------------------
+    84                                  ;..........subrutinas....................	
+    85                                  
+    86                                  
+    87                                  

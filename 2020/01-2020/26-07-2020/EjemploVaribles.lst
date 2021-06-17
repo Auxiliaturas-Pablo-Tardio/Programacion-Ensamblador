@@ -1,0 +1,44 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o EjemploVaribles.o EjemploVaribles.asm -l EjemploVaribles.lst
+     4                                  ;link:	   -->> gcc64 -o EjemploVaribles EjemploVaribles.o
+     5                                  ;run:      -->> EjemploVaribles
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: EjemploVaribles.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15                                  ;nombreDeVariable D=DEFINIR Letra=tamaño de variable    Valor
+    16 00000000 FF                      varByte db 255
+    17 00000001 FFFF                    varWord dw 65535
+    18 00000003 E163F00C                varDouble dd 217080801
+    19 00000007 F005000000000000        varQuead dq 1520 
+    20                                  		
+    21                                  segment .bss
+    22                                  ;Block Started by Symbol(BSS) 
+    23                                  ;aqui van las variables declaradas pero sin inicializar
+    24 00000000 <res 00000001>          reservarByte resb 1
+    25 00000001 <res 00000002>          reservarWord resW 1
+    26 00000003 <res 00000004>          varC resd 1
+    27 00000007 <res 00000008>          varD resq 1
+    28 0000000F <res 00000020>          vector resq 4  ;Vector
+    29                                  
+    30                                  segment .text 
+    31                                  
+    32                                  global main 					
+    33                                  main:	
+    34                                  ;etiqueta que indica el comienzo del programa principal
+    35                                  ;aqui van las instrucciones
+    36                                  
+    37                                  
+    38                                  	
+    39 00000000 C3                      ret
+    40                                  ;---------------------------------------
+    41                                  ;..........subrutinas....................	
+    42                                  
+    43                                  
+    44                                  

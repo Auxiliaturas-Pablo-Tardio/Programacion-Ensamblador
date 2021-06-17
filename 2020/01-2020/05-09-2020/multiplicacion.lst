@@ -1,0 +1,78 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o multiplicacion.o multiplicacion.asm -l multiplicacion.lst
+     4                                  ;link:	   -->> gcc -o multiplicacion multiplicacion.o
+     5                                  ;run:      -->> multiplicacion
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: multiplicacion.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15 00000000 64                      ab db 100
+    16 00000001 FFFF                    aw dw 65535
+    17 00000003 48DA2D00                ad dd 3005000
+    18 00000007 44893BA40B000000        aq dq 50000005444
+    19                                  		
+    20                                  segment .bss
+    21                                  ;Block Started by Symbol(BSS) 
+    22                                  ;aqui van las variables declaradas pero sin inicializar
+    23                                  
+    24                                  
+    25                                  segment .text 
+    26                                  
+    27                                  global main 					
+    28                                  main:	
+    29                                  ;etiqueta que indica el comienzo del programa principal
+    30                                  ;aqui van las instrucciones
+    31                                  ;mul byte
+    32                                  
+    33 00000000 B064                    mov al,100
+    34 00000002 F62425[00000000]        mul byte[ab]
+    35                                  ;mul word
+    36                                  
+    37 00000009 66B86400                mov ax,100
+    38 0000000D 66F72425[01000000]      mul word[aw]
+    39                                  ;mul double
+    40                                  
+    41 00000015 B864000000              mov eax,100
+    42 0000001A F72425[03000000]        mul dword[ad]
+    43                                  ;mul quad
+    44                                  
+    45 00000021 B864000000              mov rax,100
+    46 00000026 48F72425[07000000]      mul qword[aq]
+    47                                  
+    48                                  ;imul 1 operando
+    49 0000002E B064                    mov al,100
+    50 00000030 F62C25[00000000]        imul byte[ab]
+    51                                  ;mul word
+    52                                  
+    53 00000037 66B86400                mov ax,100
+    54 0000003B 66F72C25[01000000]      imul word[aw]
+    55                                  ;mul double
+    56                                  
+    57 00000043 B864000000              mov eax,100
+    58 00000048 F72C25[03000000]        imul dword[ad]
+    59                                  ;mul quad
+    60                                  
+    61 0000004F B864000000              mov rax,100
+    62 00000054 48F72C25[07000000]      imul qword[aq]
+    63                                  
+    64                                  ; imul de 2 operandos
+    65                                  
+    66 0000005C 66BB9001                mov bx,400
+    67 00000060 660FAF1C25-             imul bx,[aw]
+    67 00000065 [01000000]         
+    68                                  	
+    69                                  ; imul de 3 operandos
+    70                                  
+    71 00000069 6B1C25[03000000]02      imul ebx,[ad],2
+    72 00000071 C3                      ret
+    73                                  ;---------------------------------------
+    74                                  ;..........subrutinas....................	
+    75                                  
+    76                                  
+    77                                  

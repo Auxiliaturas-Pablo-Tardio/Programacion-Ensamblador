@@ -1,0 +1,74 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o modelo00.o modelo00.asm -l modelo00.lst
+     4                                  ;link:	   -->> gcc64 -o modelo00 modelo00.o
+     5                                  ;run:      -->> modelo00
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: modelo00.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15 00000000 0C00000000000000E7-     a dq 12,-25,14,-84,99
+    15 00000009 FFFFFFFFFFFFFF0E00-
+    15 00000012 000000000000ACFFFF-
+    15 0000001B FFFFFFFFFF63000000-
+    15 00000024 00000000           
+    16                                  k EQU 3
+    17                                  		
+    18                                  segment .bss
+    19                                  ;Block Started by Symbol(BSS) 
+    20                                  ;aqui van las variables declaradas pero sin inicializar
+    21                                  
+    22 00000000 <res 00000028>          b RESQ 5 
+    23                                  segment .text 
+    24                                  
+    25                                  global main 					
+    26                                  main:	
+    27                                  ;etiqueta que indica el comienzo del programa principal
+    28                                  ;aqui van las instrucciones
+    29                                  
+    30 00000000 4831C0                  XOR RAX,RAX
+    31 00000003 4831DB                  XOR RBX,RBX
+    32 00000006 4831C9                  XOR RCX,RCX ; usado en el loop
+    33 00000009 4831D2                  XOR RDX,RDX
+    34                                  ; copiamos a un registro la direccion del vector
+    35 0000000C 48BB-                   MOV RBX,a
+    35 0000000E [0000000000000000] 
+    36                                  ; copiamos a un registro la direccion del vector b
+    37                                  
+    38 00000016 49BA-                   mov r10,b
+    38 00000018 [0000000000000000] 
+    39                                  
+    40 00000020 B905000000              mov rcx,5
+    41                                  
+    42 00000025 41B903000000            mov r9,k
+    43                                  
+    44                                  inicioDoWhile:
+    45 0000002B 4C8B03                  mov r8,[rbx] ;mov r8,[a]
+    46                                  ; elemento del vector en r8
+    47 0000002E 4C89C0                  mov rax,r8
+    48 00000031 4899                    cqo ; instruccion para ampliar rax a rdx:rax
+    49                                  
+    50                                  
+    51 00000033 49F7F9                  IDIV r9
+    52                                  ; el resultado del div esta en rax
+    53                                  ; el mod en rdx NO LO NECESITAMOS
+    54 00000036 498902                  mov [R10],rax
+    55                                  
+    56                                  
+    57 00000039 4983C208                add r10,8
+    58 0000003D 4883C308                add rbx,8
+    59                                  
+    60 00000041 E2E8                    loop inicioDoWhile
+    61                                  
+    62                                  	
+    63 00000043 C3                      ret
+    64                                  ;---------------------------------------
+    65                                  ;..........subrutinas....................	
+    66                                  
+    67                                  
+    68                                  

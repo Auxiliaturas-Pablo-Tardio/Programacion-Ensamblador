@@ -1,0 +1,93 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o Print.o Print.asm -l Print.lst
+     4                                  ;link:	   -->> gcc64 -o Print Print.o
+     5                                  ;run:      -->> Print
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: Print.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15 00000000 486F6C612071756520-     m1  db "Hola que tal",0
+    15 00000009 74616C00           
+    16 0000000D 4C6F732076616C6F72-     m2 db "Los valores son %lld y %lld",0
+    16 00000016 657320736F6E20256C-
+    16 0000001F 6C64207920256C6C64-
+    16 00000028 00                 
+    17 00000029 4C6F732076616C6F72-     m3 db "Los valores son 1:%ld    2: %lld    3: %lld    4: %lld     5: %lld     6: %lld",0
+    17 00000032 657320736F6E20313A-
+    17 0000003B 256C6420202020323A-
+    17 00000044 20256C6C6420202020-
+    17 0000004D 333A20256C6C642020-
+    17 00000056 2020343A20256C6C64-
+    17 0000005F 2020202020353A2025-
+    17 00000068 6C6C64202020202036-
+    17 00000071 3A20256C6C6400     
+    18 00000078 FD25F00C00000000        v1 dq 217064957
+    19 00000080 C800000000000000        v2 dq 200	
+    20 00000088 2C01000000000000        v3 dQ 300
+    21 00000090 9001000000000000        v4 dQ 400
+    22 00000098 F401000000000000        v5 dq 500
+    23 000000A0 5802000000000000        v6 dq 600		
+    24                                  segment .bss
+    25                                  ;Block Started by Symbol(BSS) 
+    26                                  ;aqui van las variables declaradas pero sin inicializar
+    27                                  
+    28                                  
+    29                                  segment .text 
+    30                                  
+    31                                  global main 					
+    32                                  main:	
+    33                                  ;etiqueta que indica el comienzo del programa principal
+    34                                  ;aqui van las instrucciones
+    35                                  
+    36                                  ;le pasamos el mensaje solamente(1 parametro)
+    37 00000000 4883EC20                sub rsp,0x20
+    38 00000004 48B9-                   mov rcx, m1 ;por referencia
+    38 00000006 [0000000000000000] 
+    39 0000000E E8(00000000)            call printf
+    40 00000013 4883C420                add rsp, 0x20
+    41                                  
+    42                                  ; Mensaje + Variable
+    43 00000017 4883EC20                sub rsp,0x20
+    44                                  ; rcx, rdx, r8
+    45                                  
+    46 0000001B 4C8B0425[80000000]      mov r8,[v2]
+    47 00000023 488B1425[78000000]      mov rdx,[v1]
+    48 0000002B 48B9-                   mov rcx,m2
+    48 0000002D [0D00000000000000] 
+    49 00000035 E8(00000000)            call printf
+    50                                  
+    51 0000003A 4C0FBE0425-             movsx r8,byte[v3]
+    51 0000003F [88000000]         
+    52 00000043 480FBE1425-             movsx rdx,byte[v4]
+    52 00000048 [90000000]         
+    53 0000004C 48B9-                   mov rcx,m2
+    53 0000004E [0D00000000000000] 
+    54 00000056 E8(00000000)            call printf
+    55 0000005B 4883C420                add rsp,0x20  
+    56                                  
+    57                                  ;PrintF con mas de 4 parametros
+    58                                  
+    59 0000005F FF3425[A0000000]        push qword[v6]
+    60 00000066 FF3425[98000000]        push  qword[v5]
+    61 0000006D FF3425[90000000]        push qword[v4]
+    62 00000074 4883EC20                sub rsp, 0x20		; 32 bytes (4 argumentos) -> shadow space 
+    63 00000078 4C8B0C25[88000000]      mov r9,[v3]
+    64 00000080 4C8B0425[80000000]      mov r8,[v2]
+    65 00000088 488B1425[78000000]      mov rdx,[v1]
+    66 00000090 48B9-                   mov rcx,m3
+    66 00000092 [2900000000000000] 
+    67 0000009A E8(00000000)            call printf
+    68 0000009F 4883C418                add rsp,24
+    69 000000A3 4883C420                add rsp,0x20
+    70 000000A7 C3                      ret
+    71                                  ;---------------------------------------
+    72                                  ;..........subrutinas....................	
+    73                                  
+    74                                  
+    75                                  

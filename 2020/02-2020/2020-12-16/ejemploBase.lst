@@ -1,0 +1,61 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o ejemploBase.o ejemploBase.asm -l ejemploBase.lst
+     4                                  ;link:	   -->> gcc -o ejemploBase ejemploBase.o
+     5                                  ;run:      -->> ejemploBase
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: ejemploBase.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15                                  ;Byte
+    16 00000000 FF                      A db 255
+    17 00000001 FF                      variableUnob  db +255
+    18 00000002 9B                      variableDosB DB 155
+    19 00000003 FF                      variableTresB DB -1		
+    20                                  ;Word
+    21 00000004 FFFF                    variableUnoW DW 65535
+    22 00000006 0180                    variableDosW DW -32767
+    23 00000008 FFFF                    variableTresW DW -1	
+    24                                  ;Double
+    25 0000000A 00286BEE                variableUnoDouble DD 4000000000
+    26 0000000E 78563412                variableDosD DD 0x12345678
+    27 00000012 FFFFFFFF                variableTresD DD -1	
+    28                                  ;Quad
+    29 00000016 00409452A3030000        variableUnoQ DQ 4000000000000
+    30 0000001E 7856341200000000        variableDosQ DQ 0x12345678
+    31 00000026 FFFFFFFFFFFFFFFF        variableTresQ DQ -1	
+    32                                  segment .bss
+    33                                  ;Block Started by Symbol(BSS) 
+    34                                  ;aqui van las variables declaradas pero sin inicializar
+    35                                  ;Byte
+    36 00000000 <res 00000001>          varRes1B resb 1
+    37 00000001 <res 00000004>          varRes2B resb 4
+    38                                  ;word
+    39 00000005 <res 00000002>          varRes1W RESW 1
+    40 00000007 <res 00000008>          varRes2W RESW 4
+    41                                  ;DOUBLE
+    42 0000000F <res 00000004>          varRes1D RESD 1
+    43 00000013 <res 00000010>          varRes2D RESD 4
+    44                                  ;QUAD 
+    45 00000023 <res 00000010>          quadRes1Q resQ 2
+    46                                  
+    47                                  segment .text 
+    48                                  
+    49                                  global main 					
+    50                                  main:	
+    51                                  ;etiqueta que indica el comienzo del programa principal
+    52                                  ;aqui van las instrucciones
+    53                                  
+    54 00000000 881C25[00000000]        MOV [A],bl
+    55                                  	
+    56 00000007 C3                      ret
+    57                                  ;---------------------------------------
+    58                                  ;..........subrutinas....................	
+    59                                  
+    60                                  
+    61                                  

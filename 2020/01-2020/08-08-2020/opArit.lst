@@ -1,0 +1,56 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o opArit.o opArit.asm -l opArit.lst
+     4                                  ;link:	   -->> gcc -o opArit opArit.o
+     5                                  ;run:      -->> opArit
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: opArit.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15 00000000 64                      a db 100
+    16 00000001 C8                      b db 200
+    17 00000002 FF                      m db 0xff
+    18                                  
+    19                                  segment .bss
+    20                                  ;Block Started by Symbol(BSS) 
+    21                                  ;aqui van las variables declaradas pero sin inicializar
+    22                                  
+    23 00000000 <res 00000001>          c resb 1
+    24 00000001 <res 00000002>          x resw 1	
+    25                                  segment .text 
+    26                                  
+    27                                  global main 					
+    28                                  main:	
+    29                                  ;etiqueta que indica el comienzo del programa principal
+    30                                  ;aqui van las instrucciones
+    31                                  ;ADD
+    32 00000000 4831C0                  xor rax,rax
+    33                                  
+    34 00000003 8A0425[00000000]        mov al,[a]
+    35 0000000A 020425[01000000]        add al,[b]
+    36 00000011 880425[00000000]        mov [c],al
+    37                                  
+    38 00000018 8A1C25[01000000]        mov bl,[b]
+    39 0000001F 2A1C25[00000000]        sub bl,[a]
+    40 00000026 881C25[00000000]        mov [c],bl
+    41                                  
+    42 0000002D 8A0425[00000000]        mov al,[a]
+    43 00000034 020425[01000000]        add al,[b]
+    44                                  
+    45 0000003B 880425[01000000]        mov [x],al
+    46 00000042 801425[02000000]00      adc byte[x+1],0
+    47                                  
+    48 0000004A FE0425[02000000]        inc byte[m]
+    49 00000051 FE0C25[02000000]        dec byte[m]
+    50                                  	
+    51 00000058 C3                      ret
+    52                                  ;---------------------------------------
+    53                                  ;..........subrutinas....................	
+    54                                  
+    55                                  
+    56                                  

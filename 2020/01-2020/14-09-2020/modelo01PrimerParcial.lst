@@ -1,0 +1,85 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o modelo01PrimerParcial.o modelo01PrimerParcial.asm -l modelo01PrimerParcial.lst
+     4                                  ;link:	   -->> gcc64 -o modelo01PrimerParcial modelo01PrimerParcial.o
+     5                                  ;run:      -->> modelo01PrimerParcial
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: modelo01PrimerParcial.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15 00000000 0300000000000000        rango dq 3
+    16                                  		
+    17                                  segment .bss
+    18                                  ;Block Started by Symbol(BSS) 
+    19                                  ;aqui van las variables declaradas pero sin inicializar
+    20 00000000 <res 00000008>          x resq 1
+    21                                  
+    22                                  segment .text 
+    23                                  global main 					
+    24                                  main:	
+    25                                  
+    26                                  ;caso especial division entre 0
+    27 00000000 48833C25[00000000]-     CMP qword[rango],0
+    27 00000008 00                 
+    28 00000009 7457                    JE fin
+    29                                  ;etiqueta que indica el comienzo del programa principal
+    30                                  ;aqui van las instrucciones
+    31 0000000B 4831C0                  xor rax,rax
+    32 0000000E 4831DB                  xor rbx,rbx
+    33 00000011 4831C9                  xor rcx,rcx
+    34 00000014 4831D2                  xor rdx,rdx
+    35 00000017 4D31C0                  xor r8,r8
+    36                                  ; contador = rcx
+    37                                  
+    38 0000001A B901000000              mov rcx,1
+    39                                  
+    40                                  
+    41                                  cicloserie:
+    42                                  
+    43                                  ;Cubo 2Elevado0=1 2Elevado1=2 2Elevado2=4 2Elevado3=8
+    44                                  ;Manera Lineal
+    45                                  ;MOV RAX,rcx
+    46                                  ;MOV RBX,RAX
+    47                                  ;IMUL RAX,RBX
+    48                                  ;IMUL RAX,RBX
+    49                                  ;Manera Ciclo
+    50 0000001F 488B1C25[00000000]      mov rbx,[rango]
+    51 00000027 4989D8                  mov r8,RBX  ; rbx =exponente
+    52 0000002A 4D31C9                  xor r9,r9
+    53 0000002D 41B901000000            mov r9,1
+    54                                  cicloElevar:
+    55 00000033 4C0FAFC9                IMUL R9,rcx
+    56 00000037 49FFC8                  dec r8
+    57 0000003A 75F7                    JNZ cicloElevar
+    58 0000003C 4C89C8                  mov rax,r9
+    59                                  ;Almacenar el valor
+    60                                  
+    61 0000003F 4801C2                  ADD RDX,RAX ; C=0  c=c+valor que entra
+    62                                  
+    63                                  ;controlar el cicloserie
+    64 00000042 48FFC1                  INC rcx ;= ADD RCX,1
+    65                                  ;while (rcx<=rango)
+    66                                  
+    67 00000045 483B0C25[00000000]      cmp rcx,[rango]
+    68                                  ;cbw
+    69                                  ;cwd
+    70                                  ;cdq
+    71                                  ;cqo
+    72 0000004D 7ED0                    JLE cicloserie ;Jump less or equal
+    73 0000004F 4889D0                  MOV RAX,RDX
+    74                                  
+    75 00000052 48F73C25[00000000]      IDIV qword[rango]
+    76                                  
+    77 0000005A 48890425[00000000]      mov [x],rax
+    78                                  fin:
+    79 00000062 C3                      ret 
+    80                                  ;---------------------------------------
+    81                                  ;..........subrutinas....................	
+    82                                  
+    83                                  
+    84                                  

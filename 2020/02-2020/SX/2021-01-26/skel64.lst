@@ -1,0 +1,48 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o skel64.o skel64.asm -l skel64.lst
+     4                                  ;link:	   -->> gcc -o skel64 skel64.o
+     5                                  ;run:      -->> skel64
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: skel64.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15 00000000 FF                      a db 255
+    16 00000001 DCFF                    b dw 65500
+    17 00000003 80F0FA02                c dd 50000000
+    18 00000007 905F010000000000        d dq 90000
+    19                                  		
+    20                                  segment .bss
+    21                                  ;Block Started by Symbol(BSS) 
+    22                                  ;aqui van las variables declaradas pero sin inicializar
+    23                                   
+    24 00000000 <res 00000001>          ar resb 1
+    25 00000001 <res 00000002>          br resw 1
+    26 00000003 <res 00000004>          cr resd 1
+    27 00000007 <res 00000008>          dr resq 1
+    28                                  segment .text 
+    29                                  
+    30                                  global main 					
+    31                                  main:	
+    32                                  ;etiqueta que indica el comienzo del programa principal
+    33                                  ;aqui van las instrucciones
+    34                                  
+    35 00000000 668B0425[00000000]      mov ax,[a]
+    36 00000008 66890425[00000000]      mov [a],ax
+    37 00000010 6689D8                  mov ax,bx
+    38 00000013 66C70425[00000000]-     mov word[a],100
+    38 0000001B 6400               
+    39 0000001D 66BB6400                mov bx,100
+    40                                  
+    41                                  	
+    42 00000021 C3                      ret
+    43                                  ;---------------------------------------
+    44                                  ;..........subrutinas....................	
+    45                                  
+    46                                  
+    47                                  

@@ -1,0 +1,161 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o MCD.o MCD.asm -l MCD.lst
+     4                                  ;link:	   -->> gcc -o MCD MCD.o
+     5                                  ;run:      -->> MCD
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: MCD.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf,gets	
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15                                  ;Var de 32 bits double
+    16 00000000 256400                  formatoDecimal db "%d",0
+    17 00000003 496E67726573617220-     mA db "Ingresar el valor de A: ",0
+    17 0000000C 656C2076616C6F7220-
+    17 00000015 646520413A2000     
+    18 0000001C 496E67726573617220-     mB db "Ingresar el valor de B: ",0
+    18 00000025 656C2076616C6F7220-
+    18 0000002E 646520423A2000     
+    19                                  
+    20 00000035 456C206D6364206465-     mD db "El mcd de A=%d y B=%d %d ",0
+    20 0000003E 20413D256420792042-
+    20 00000047 3D25642025642000   
+    21                                  segment .bss
+    22                                  ;Block Started by Symbol(BSS) 
+    23                                  ;aqui van las variables declaradas pero sin inicializar
+    24 00000000 <res 00000004>          a resd 1
+    25 00000004 <res 00000004>          b resd 1
+    26                                  
+    27                                  segment .text 
+    28                                  
+    29                                  global main 					
+    30                                  main:	
+    31                                  ;etiqueta que indica el comienzo del programa principal
+    32                                  ;aqui van las instrucciones
+    33                                  ;PASO 1 escanear/introducir variables
+    34                                  
+    35                                  ;printF(&mensaje)
+    36 00000000 4883EC20                sub rsp,0x20
+    37 00000004 48B9-                   	mov rcx, mA
+    37 00000006 [0300000000000000] 
+    38 0000000E E8(00000000)            	call printf
+    39 00000013 4883C420                add rsp, 0x20
+    40                                  ; MCD(&formato, &variableDestino)
+    41                                  
+    42 00000017 4883EC20                sub rsp,0x20
+    43 0000001B 48B9-                   	mov rcx, formatoDecimal
+    43 0000001D [0000000000000000] 
+    44 00000025 48BA-                   	mov rdx, a
+    44 00000027 [0000000000000000] 
+    45 0000002F E8(00000000)            	call scanf
+    46 00000034 4883C420                add rsp, 0x20
+    47                                  
+    48                                  ;printF(&mensaje)
+    49 00000038 4883EC20                sub rsp,0x20
+    50 0000003C 48B9-                   	mov rcx, mB
+    50 0000003E [1C00000000000000] 
+    51 00000046 E8(00000000)            	call printf
+    52 0000004B 4883C420                add rsp, 0x20
+    53                                  
+    54 0000004F 4883EC20                sub rsp,0x20
+    55 00000053 48B9-                   	mov rcx, formatoDecimal
+    55 00000055 [0000000000000000] 
+    56 0000005D 48BA-                   	mov rdx, b
+    56 0000005F [0400000000000000] 
+    57 00000067 E8(00000000)            	call scanf
+    58 0000006C 4883C420                add rsp, 0x20
+    59                                  
+    60 00000070 4883EC20                sub rsp,0x20
+    61                                  ; mcd (a,b) return mcd en eax
+    62 00000074 8B0C25[00000000]        	mov ecx,[a]
+    63 0000007B 8B1425[04000000]        	mov edx,[b]
+    64 00000082 E82F000000              	call mcd
+    65 00000087 4883C420                add rsp,0x20
+    66                                  
+    67 0000008B 4883EC20                sub rsp,0x20
+    68 0000008F 48B9-                   	mov rcx,mD
+    68 00000091 [3500000000000000] 
+    69 00000099 488B1425[00000000]      	mov rdx,[a]
+    70 000000A1 4C8B0425[04000000]      	mov r8,[b]
+    71 000000A9 4989C1                  	mov r9,rax
+    72 000000AC E8(00000000)            	call printf
+    73 000000B1 4883C420                add rsp,0x20
+    74                                  
+    75 000000B5 C3                      ret
+    76                                  
+    77                                  
+    78                                  ;---------------------------------------
+    79                                  ;..........subrutinas....................	
+    80                                  
+    81                                  mcd:
+    82                                  	;   rcx,[a]
+    83                                  	;	rdx,[b]
+    84                                  	; Preguntar cual es el minimo
+    85                                  	;if (a<=b)  menor = al menos
+    86                                      ;r12 ----1 ----1 numero fue divisible- ----2 numero fue divisible 
+    87                                  	
+    88 000000B6 39D1                    	cmp ecx,edx ;(a<=b)
+    89                                  	; Numeros Con Signo
+    90 000000B8 7C02                    	JL esMenorA
+    91 000000BA EB04                    	JMP elseEsMenorA
+    92                                  	esMenorA:
+    93                                  		;el menor estara en el registro EAX
+    94 000000BC 89C8                    		MOV eax,ecx
+    95 000000BE EB02                    		JMP finIf ;a es menor que b
+    96                                  	elseEsMenorA:
+    97 000000C0 89D0                    		mov eax,edx ; b es menor que a
+    98                                  	finIf:
+    99                                  	 
+   100 000000C2 51                      		push rcx  ; stack es de 64 bits
+   101                                  		; salvar rcx
+   102                                  
+   103 000000C3 4189C2                  		mov R10d,eax
+   104                                  		cicloDivision:
+   105                                  		;  a , b  .....ecx,edx /R10
+   106 000000C6 52                      		 push rdx
+   107 000000C7 89C8                    			mov eax,ecx
+   108                                  			
+   109 000000C9 99                      			cdq 
+   110 000000CA 41F7FA                  			idiv R10d
+   111                                  			; eax cociente---edx resd
+   112                                  			; if (mod ==0)
+   113 000000CD 83FA00                  			cmp edx,0
+   114 000000D0 7402                    			JE EsDivisibleA
+   115 000000D2 EB0F                    			jmp elseNoEsDivisible
+   116                                  			
+   117                                  			
+   118                                  			EsDivisibleA:
+   119                                  			 ; dividir B
+   120 000000D4 5A                      			 pop rdx ;recuperar
+   121 000000D5 89D0                    			 mov eax,edx
+   122 000000D7 52                      			 push rdx ;volvemos a salvar
+   123 000000D8 99                      				cdq 
+   124 000000D9 41F7FA                  				idiv R10d
+   125                                  			; eax cociente---edx resd
+   126                                  			; if (mod ==0)
+   127 000000DC 83FA00                  			cmp edx,0
+   128 000000DF 740E                    			JE EsDivisibleB
+   129 000000E1 EB00                    			jmp elseNoEsDivisible
+   130                                  			
+   131                                  			
+   132                                  		elseNoEsDivisible:	
+   133 000000E3 5A                      		pop rdx
+   134                                  			
+   135 000000E4 49FFCA                  		DEC R10
+   136 000000E7 4983FA00                		CMP R10,0
+   137 000000EB 75D9                    		JNZ cicloDivision
+   138 000000ED EB01                    		jmp saltoNoEsDivisible
+   139                                  		EsDivisibleB:
+   140 000000EF 5A                      		pop rdx
+   141                                  		saltoNoEsDivisible:
+   142                                  		
+   143 000000F0 59                      	pop rcx ;recuperar rcx 
+   144 000000F1 4489D0                  mov eax,r10d
+   145 000000F4 C3                      ret
+   146                                  
+   147                                  
+   148                                  
