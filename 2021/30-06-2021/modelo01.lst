@@ -1,0 +1,64 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o modelo01.o modelo01.asm -l modelo01.lst
+     4                                  ;link:	   -->> gcc -o modelo01 modelo01.o
+     5                                  ;run:      -->> modelo01
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: modelo01.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15 00000000 99000000000000003E-     a dq 153,218064958,-499,5382525,50,-95,20,4592,0x123456789,-801,0
+    15 00000009 68FF0C000000000DFE-
+    15 00000012 FFFFFFFFFFFF7D2152-
+    15 0000001B 000000000032000000-
+    15 00000024 00000000A1FFFFFFFF-
+    15 0000002D FFFFFF140000000000-
+    15 00000036 0000F0110000000000-
+    15 0000003F 008967452301000000-
+    15 00000048 DFFCFFFFFFFFFFFF00-
+    15 00000051 00000000000000     
+    16 00000058 E513000000000000        b dq 5093		
+    17                                  segment .bss
+    18                                  ;Block Started by Symbol(BSS) 
+    19                                  ;aqui van las variables declaradas pero sin inicializar
+    20 00000000 <res 00000008>          promedio resq 1
+    21 00000008 <res 00000008>          residuo resq 1
+    22                                  segment .text 
+    23                                  
+    24                                  global main 					
+    25                                  main:	
+    26                                  ;etiqueta que indica el comienzo del programa principal
+    27                                  ;aqui van las instrucciones
+    28                                  
+    29 00000000 4D31FF                  xor r15,r15  ; registro que sera indice
+    30 00000003 4D31F6                  xor r14,r14 ;registro para contar los elementos
+    31 00000006 4831C0                  xor rax,rax
+    32 00000009 4831DB                  xor rbx,rbx
+    33                                  
+    34                                  ciclo:
+    35 0000000C 4A8B1CFD[00000000]      	mov rbx,[a+r15*8];extraemos el elemento
+    36 00000014 480FAF1C25-             	IMUL rbx,[b]
+    36 00000019 [58000000]         
+    37 0000001D 4801D8                  	add rax, rbx ;Acumulamos en rax
+    38 00000020 49FFC6                  	inc r14
+    39 00000023 49FFC7                  	inc r15
+    40 00000026 4883FB00                cmp rbx,0
+    41 0000002A 75E0                    JNZ ciclo
+    42 0000002C 49FFCF                  dec r15
+    43                                  ;duplicamos el tamaño del numerador
+    44 0000002F 4899                    cqo
+    45                                  ;dividimos
+    46 00000031 49F7FE                  IDIV r14
+    47 00000034 48890425[00000000]      MOV [promedio],rax
+    48 0000003C 48891425[08000000]      mov [residuo],rdx	
+    49 00000044 C3                      ret
+    50                                  ;---------------------------------------
+    51                                  ;..........subrutinas....................	
+    52                                  
+    53                                  
+    54                                  
