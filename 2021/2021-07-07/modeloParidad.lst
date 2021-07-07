@@ -1,0 +1,72 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o modeloParidad.o modeloParidad.asm -l modeloParidad.lst
+     4                                  ;link:	   -->> gcc -o modeloParidad modeloParidad.o
+     5                                  ;run:      -->> modeloParidad
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: modeloParidad.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15 00000000 050A04050300            arreglo db 5,10,4,5,3,0
+    16                                  	
+    17                                  segment .bss
+    18                                  ;Block Started by Symbol(BSS) 
+    19                                  ;aqui van las variables declaradas pero sin inicializar
+    20 00000000 <res 00000001>          paridad resb 1
+    21                                  
+    22                                  segment .text 
+    23                                  
+    24                                  global main 					
+    25                                  main:	
+    26                                  ;etiqueta que indica el comienzo del programa principal
+    27                                  ;aqui van las instrucciones
+    28                                  ; Base + indice 
+    29                                  ; registroBase (RBX, rbp) + indice( rsi,rdi)
+    30 00000000 4831DB                  xor rbx,rbx
+    31 00000003 48BB-                   mov rbx,arreglo; direccion
+    31 00000005 [0000000000000000] 
+    32 0000000D 4831F6                  xor rsi,rsi ;indice
+    33 00000010 4831D2                  xor rdx,rdx ; elemento actual
+    34 00000013 4831C0                  xor rax,rax ;suma de bits  
+    35                                  ciclo:
+    36                                  
+    37 00000016 8A1433                  	mov dl,[rbx+rsi];extraigo el elemento
+    38 00000019 B908000000              	mov rcx,8
+    39                                  	;Subciclo para acumular bits de mi elemento actual
+    40                                  	subCiclo:
+    41 0000001E 4188D4                  		mov r12b,dl ; registro auxiliar para el and
+    42 00000021 4180E401                		and r12b,1
+    43 00000025 4400E0                  		add al,r12b
+    44 00000028 D0CA                    		ror dl,1
+    45                                  		
+    46                                  	
+    47 0000002A E2F2                    	loop subCiclo
+    48 0000002C 48FFC6                  	inc rsi
+    49                                  	
+    50 0000002F 80FA00                  	cmp dl,0 ; cl==0?
+    51 00000032 7402                    JZ salir
+    52 00000034 EBE0                    JMP ciclo
+    53                                  	
+    54                                  salir:
+    55                                  ;como ya sali del ciclo verifico si el numero de bits es para
+    56                                  
+    57 00000036 D0E8                    shr al,1 
+    58 00000038 7202                    jc esImpar
+    59 0000003A EB0A                    JMP esPar
+    60                                  esImpar:
+    61 0000003C C60425[00000000]00      mov byte[paridad],0
+    62 00000044 EB08                    jmp finTotal
+    63                                  esPar: 
+    64 00000046 C60425[00000000]01      mov byte[paridad],1
+    65                                  finTotal:
+    66 0000004E C3                      ret
+    67                                  ;---------------------------------------
+    68                                  ;..........subrutinas....................	
+    69                                  
+    70                                  
+    71                                  
