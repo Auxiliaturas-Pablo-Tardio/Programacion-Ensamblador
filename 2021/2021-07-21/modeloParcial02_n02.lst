@@ -1,0 +1,116 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o modeloParcial02_n02.o modeloParcial02_n02.asm -l modeloParcial02_n02.lst
+     4                                  ;link:	   -->> gcc -o modeloParcial02_n02 modeloParcial02_n02.o
+     5                                  ;run:      -->> modeloParcial02_n02
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: modeloParcial02_n02.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15 00000000 496E74726F64757A63-     m1 db "Introduzca elem y ponga 0 para finalizar",0
+    15 00000009 6120656C656D207920-
+    15 00000012 706F6E676120302070-
+    15 0000001B 6172612066696E616C-
+    15 00000024 697A617200         
+    16 00000029 7375206F74726F2061-     m2 db "su otro arreglo es =",0
+    16 00000032 727265676C6F206573-
+    16 0000003B 203D00             
+    17 0000003E 256C6C642C00            m3 db "%lld,",0
+    18 00000044 256C6C6400              fmt db "%lld",0
+    19                                  segment .bss
+    20                                  ;Block Started by Symbol(BSS) 
+    21                                  ;aqui van las variables declaradas pero sin inicializar
+    22 00000000 <res 00000320>          a resq 100 ; arreglo de numeros
+    23 00000320 <res 00000320>          b resq 100
+    24                                  
+    25                                  segment .text 
+    26                                   
+    27                                  global main 					
+    28                                  main:	
+    29                                  
+    30                                  
+    31                                  
+    32                                  
+    33 00000000 4831DB                  xor rbx,rbx
+    34                                  ciclo:
+    35                                  ; Pedir elemento por elemento
+    36                                  
+    37 00000003 53                      PUSH rbx
+    38 00000004 4D31D2                  		xor r10,r10
+    39 00000007 486BDB08                		imul rbx,8
+    40 0000000B 4901DA                  		add r10,rbx
+    41 0000000E 4981C2[00000000]        		add r10,a
+    42                                  		; a+(indice*8)
+    43 00000015 4152                    		push r10
+    44 00000017 4883EC20                		sub rsp,0x20
+    45 0000001B 48B9-                   			mov rcx, fmt
+    45 0000001D [4400000000000000] 
+    46 00000025 4C89D2                  			mov rdx,r10
+    47 00000028 E8(00000000)            			call scanf
+    48 0000002D 4883C420                		add rsp,0x20
+    49 00000031 415A                    		pop r10
+    50 00000033 49833A00                		cmp qword[r10],0
+    51 00000037 7406                    		je salirEscaneo
+    52 00000039 5B                      POP rbx
+    53 0000003A 48FFC3                  inc rbx
+    54 0000003D EBC4                    JMP ciclo
+    55                                  salirEscaneo:
+    56                                  
+    57                                  ; RBX tiene el tamaño del vector -1
+    58 0000003F 48FFC3                  inc rbx
+    59 00000042 4883EC20                sub rsp,0x20
+    60 00000046 48B9-                   	mov rcx,a
+    60 00000048 [0000000000000000] 
+    61 00000050 48BA-                   	mov rdx,b
+    61 00000052 [2003000000000000] 
+    62 0000005A 4989D8                  	mov r8,rbx
+    63 0000005D E839000000              	call sacarCubosEnArreglo
+    64 00000062 4883C420                add rsp,0x20
+    65                                  
+    66                                  ;imprimir un vector
+    67 00000066 4831F6                  xor rsi,rsi
+    68                                  cicloImprimir:
+    69 00000069 56                      push rsi
+    70 0000006A 4883EC20                	sub rsp,0x20
+    71 0000006E 48B9-                   		mov rcx,m3
+    71 00000070 [3E00000000000000] 
+    72 00000078 488B14F5[20030000]      		mov rdx, [b+(rsi*8)]
+    73 00000080 E8(00000000)            		call printf
+    74 00000085 4883C420                	add rsp,0x20
+    75                                  	
+    76 00000089 48833CF5[20030000]-     	cmp qword[b+rsi*8],0
+    76 00000091 00                 
+    77 00000092 7406                    	je salirImpresion
+    78 00000094 5E                      pop rsi
+    79 00000095 48FFC6                  inc rsi
+    80 00000098 EBCF                    JMP cicloImprimir
+    81                                  salirImpresion:
+    82                                  
+    83 0000009A C3                      ret
+    84                                  ;---------------------------------------
+    85                                  ;..........subrutinas....................	
+    86                                  sacarCubosEnArreglo:
+    87                                  	; param 1: arreglo1 direccion
+    88                                  	; param 2: arreglo2 direccion
+    89                                  	; param 3: tamaño valor
+    90 0000009B 4989CA                  	mov r10,rcx
+    91                                  	
+    92 0000009E 4C89C1                  	mov rcx,r8
+    93                                  	
+    94                                  	cicloCubo:
+    95 000000A1 4831C0                  		xor rax,rax
+    96 000000A4 B801000000              		mov rax,1
+    97                                  		
+    98 000000A9 490FAF44CAF8            		imul rax,[r10+((rcx-1)*8)]
+    99 000000AF 490FAF44CAF8            		imul rax,[r10+((rcx-1)*8)]
+   100 000000B5 490FAF44CAF8            		imul rax,[r10+((rcx-1)*8)]
+   101 000000BB 488944CAF8              		mov [rdx+((rcx-1)*8)],rax 
+   102                                  		
+   103 000000C0 E2DF                    	loop cicloCubo
+   104                                  
+   105 000000C2 C3                      ret

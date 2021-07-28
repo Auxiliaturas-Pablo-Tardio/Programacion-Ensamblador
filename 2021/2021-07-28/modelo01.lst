@@ -1,0 +1,164 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o modelo01.o modelo01.asm -l modelo01.lst
+     4                                  ;link:	   -->> gcc -o modelo01 modelo01.o
+     5                                  ;run:      -->> modelo01
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: modelo01.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15 00000000 496E67726573617220-     m1 db "Ingresar el valor de a",10,0
+    15 00000009 656C2076616C6F7220-
+    15 00000012 646520610A00       
+    16 00000018 496E67726573617220-     m2 db "Ingresar el valor de b",10,0
+    16 00000021 656C2076616C6F7220-
+    16 0000002A 646520620A00       
+    17 00000030 496E67726573617220-     m3 db "Ingresar el valor de c",10,0
+    17 00000039 656C2076616C6F7220-
+    17 00000042 646520630A00       
+    18 00000048 526573756C7461646F-     m4 db "Resultado x = %ld",0
+    18 00000051 2078203D20256C6400 
+    19 0000005A 256C6400                fmtDouble db "%ld",0
+    20                                  		
+    21                                  segment .bss
+    22                                  ;Block Started by Symbol(BSS) 
+    23                                  ;aqui van las variables declaradas pero sin inicializar
+    24 00000000 <res 00000004>          a resd 1
+    25 00000004 <res 00000004>          b  resd 1
+    26 00000008 <res 00000004>          c  resd 1
+    27 0000000C <res 00000004>          x  resd 1
+    28                                  segment .text 
+    29                                  
+    30                                  global main 					
+    31                                  main:	
+    32                                  ;etiqueta que indica el comienzo del programa principal
+    33                                  ;aqui van las instrucciones
+    34                                   
+    35                                  ; pedir y leer a
+    36 00000000 4883EC20                sub rsp,0x20
+    37 00000004 48B9-                   	mov rcx,m1
+    37 00000006 [0000000000000000] 
+    38 0000000E E8(00000000)            	call printf
+    39 00000013 4883C420                add rsp,0x20
+    40                                  
+    41 00000017 4883EC20                sub rsp,0x20
+    42 0000001B 48B9-                   	mov rcx,fmtDouble
+    42 0000001D [5A00000000000000] 
+    43 00000025 48BA-                   	mov rdx,a
+    43 00000027 [0000000000000000] 
+    44 0000002F E8(00000000)            	call scanf
+    45 00000034 4883C420                add rsp,0x20
+    46                                  
+    47                                  ; pedir y leer b
+    48 00000038 4883EC20                sub rsp,0x20
+    49 0000003C 48B9-                   	mov rcx,m2
+    49 0000003E [1800000000000000] 
+    50 00000046 E8(00000000)            	call printf
+    51 0000004B 4883C420                add rsp,0x20
+    52                                  
+    53 0000004F 4883EC20                sub rsp,0x20
+    54 00000053 48B9-                   	mov rcx,fmtDouble
+    54 00000055 [5A00000000000000] 
+    55 0000005D 48BA-                   	mov rdx,b
+    55 0000005F [0400000000000000] 
+    56 00000067 E8(00000000)            	call scanf
+    57 0000006C 4883C420                add rsp,0x20
+    58                                  
+    59                                  ; pedir y leer b
+    60 00000070 4883EC20                sub rsp,0x20
+    61 00000074 48B9-                   	mov rcx,m3
+    61 00000076 [3000000000000000] 
+    62 0000007E E8(00000000)            	call printf
+    63 00000083 4883C420                add rsp,0x20
+    64                                  
+    65 00000087 4883EC20                sub rsp,0x20
+    66 0000008B 48B9-                   	mov rcx,fmtDouble
+    66 0000008D [5A00000000000000] 
+    67 00000095 48BA-                   	mov rdx,c
+    67 00000097 [0800000000000000] 
+    68 0000009F E8(00000000)            	call scanf
+    69 000000A4 4883C420                add rsp,0x20
+    70                                  ;v1
+    71                                  ;xor rcx, rdx
+    72                                  ;xor rdx, rdx
+    73                                  ;xor r8,r8
+    74                                  
+    75 000000A8 4883EC20                sub rsp,0x20
+    76                                  ;Si fuera por referencia
+    77                                  ; 1 . quitar corchetes
+    78                                  
+    79                                  ; v1
+    80                                  ;	mov ecx,dword[a]
+    81                                  ;	mov edx,dword[b]
+    82                                  ;	mov r8d,dword[c]
+    83                                  	movzx rcx,qword[a] 
+    83          ******************       error: invalid combination of opcode and operands
+    84                                  	movzx rdx,qword[b]
+    84          ******************       error: invalid combination of opcode and operands
+    85                                  	movzx r8d,qword[c]
+    85          ******************       error: invalid combination of opcode and operands
+    86 000000AC E82C000000              	call calcular
+    87 000000B1 4883C420                add rsp,0x20	
+    88                                  
+    89 000000B5 48890425[0C000000]      mov [x],rax
+    90                                  
+    91 000000BD 4883EC20                sub rsp,0x20
+    92 000000C1 48B9-                   	mov rcx,m4
+    92 000000C3 [4800000000000000] 
+    93 000000CB 488B1425[0C000000]      	mov rdx,[x]
+    94 000000D3 E8(00000000)            	call printf
+    95 000000D8 4883C420                add rsp,0x20
+    96                                  
+    97 000000DC C3                      ret
+    98                                  ;---------------------------------------
+    99                                  ;..........subrutinas....................	
+   100                                  calcular:
+   101                                  ; rcx en 1er parametro a 
+   102                                  ; rdx es 2do param b
+   103                                  ; r8 el 3er param c
+   104                                  
+   105                                  ;Si fuera por referencia
+   106                                  ; solo tengo direcciones
+   107                                  ; rcx en 1er direccion a 
+   108                                  ; rdx es 2do direccion b
+   109                                  ; r8 el 3er direccion c 
+   110                                  ; mov r10,[rcx] extraer el valor
+   111                                  
+   112                                  
+   113 000000DD 4189D1                  mov r9d,edx
+   114 000000E0 41F7D9                  neg  r9d ;-b
+   115                                  
+   116 000000E3 C1F905                  SAR ecx,5 ; 2
+   117                                   
+   118 000000E6 4129D0                  sub r8d,edx ;3 
+   119                                  
+   120 000000E9 81E2EFCDAB00            and edx,0xABCDEF ;4
+   121                                  ;1* 80
+   122 000000EF 456BC950                IMUL r9d,80 ;5
+   123                                   
+   124 000000F3 83E914                  sub ecx,20 ;6 
+   125                                        
+   126 000000F6 4131D0                  xor r8d,edx ;7
+   127                                  
+   128                                  ;8=6/7
+   129 000000F9 4831C0                  xor rax,rax 
+   130 000000FC 89C8                    mov eax,ecx
+   131 000000FE 99                      cdq
+   132 000000FF 41F7F8                  idiv r8d 
+   133                                  ; eax cociente
+   134                                  ;edx residuo
+   135                                  ;9 = 5|8
+   136                                  
+   137 00000102 4409C8                  or eax,r9d
+   138                                  
+   139                                  ;si es que la referencia me dijera que altere en el primer param
+   140                                  ; mov [rcx],rax
+   141 00000105 C3                      ret
+   142                                  
+   143                                  
+   144                                  

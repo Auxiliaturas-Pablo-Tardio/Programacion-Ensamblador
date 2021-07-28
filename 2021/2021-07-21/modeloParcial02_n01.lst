@@ -1,0 +1,155 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o modeloParcial02_n01.o modeloParcial02_n01.asm -l modeloParcial02_n01.lst
+     4                                  ;link:	   -->> gcc -o modeloParcial02_n01 modeloParcial02_n01.o
+     5                                  ;run:      -->> modeloParcial02_n01
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: modeloParcial02_n01.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15 00000000 413D20256C6C640A00      m1 db "A= %lld",10,0
+    16 00000009 423D20256C6C640A00      m2 db "B= %lld",10,0
+    17 00000012 656C206D6364206465-     m3 db "el mcd de A= %lld y B=%lld es %lld",10,0
+    17 0000001B 20413D20256C6C6420-
+    17 00000024 7920423D256C6C6420-
+    17 0000002D 657320256C6C640A00 
+    18 00000036 496E74726F64757A63-     m4 db "Introduzca A",10,0
+    18 0000003F 6120410A00         
+    19 00000044 496E74726F64757A63-     m5 db "Introduzca B",10,0
+    19 0000004D 6120420A00         
+    20 00000052 256C6C6400              fmtInt db "%lld",0		
+    21                                  segment .bss
+    22                                  ;Block Started by Symbol(BSS) 
+    23                                  ;aqui van las variables declaradas pero sin inicializar
+    24 00000000 <res 00000008>          a resq 1
+    25 00000008 <res 00000008>          b resq 1
+    26                                  
+    27                                  segment .text 
+    28                                   
+    29                                  global main 					
+    30                                  main:	
+    31                                  ;etiqueta que indica el comienzo del programa principal
+    32                                  ;aqui van las instrucciones
+    33                                  ; Pedir A
+    34 00000000 4883EC20                sub rsp,0x20
+    35 00000004 48B9-                   	mov rcx,m4
+    35 00000006 [3600000000000000] 
+    36 0000000E E8(00000000)            	call printf
+    37 00000013 4883C420                add rsp,0x20 
+    38                                  ; leer A
+    39                                  
+    40 00000017 4883EC20                sub rsp,0x20
+    41 0000001B 48B9-                   	mov rcx,fmtInt
+    41 0000001D [5200000000000000] 
+    42 00000025 48BA-                   	mov rdx,a
+    42 00000027 [0000000000000000] 
+    43 0000002F E8(00000000)            	call scanf
+    44 00000034 4883C420                add rsp,0x20
+    45                                  
+    46                                  ; Pedir B
+    47 00000038 4883EC20                sub rsp,0x20
+    48 0000003C 48B9-                   	mov rcx,m5
+    48 0000003E [4400000000000000] 
+    49 00000046 E8(00000000)            	call printf
+    50 0000004B 4883C420                add rsp,0x20 
+    51                                  ; leer B
+    52                                  
+    53 0000004F 4883EC20                sub rsp,0x20
+    54 00000053 48B9-                   	mov rcx,fmtInt
+    54 00000055 [5200000000000000] 
+    55 0000005D 48BA-                   	mov rdx,b
+    55 0000005F [0800000000000000] 
+    56 00000067 E8(00000000)            	call scanf
+    57 0000006C 4883C420                add rsp,0x20
+    58                                  
+    59                                  ; Armar la funcion
+    60                                  
+    61 00000070 4883EC20                sub rsp,0x20
+    62 00000074 488B0C25[00000000]      	mov rcx,[a]
+    63 0000007C 488B1425[08000000]      	mov rdx,[b]
+    64 00000084 E86F000000              	call sacarMCD
+    65 00000089 4883C420                add rsp,0x20
+    66                                  ; se supone que hasta retorna en rax
+    67 0000008D 50                      push RAX ; salvar la variable
+    68                                  
+    69                                  ;Imprimir A
+    70 0000008E 4883EC20                sub rsp,0x20
+    71 00000092 48B9-                   	mov rcx,m1
+    71 00000094 [0000000000000000] 
+    72 0000009C 488B1425[00000000]      	mov rdx,[a]
+    73 000000A4 E8(00000000)            	call printf
+    74 000000A9 4883C420                add rsp,0x20
+    75                                   
+    76                                  ;imprimir B
+    77 000000AD 4883EC20                sub rsp,0x20
+    78 000000B1 48B9-                   	mov rcx,m2
+    78 000000B3 [0900000000000000] 
+    79 000000BB 488B1425[08000000]      	mov rdx,[b]
+    80 000000C3 E8(00000000)            	call printf
+    81 000000C8 4883C420                add rsp,0x20
+    82                                  
+    83 000000CC 58                      pop rax ;recuperamos lo salvado
+    84                                  ;imprimir total
+    85 000000CD 4883EC20                sub rsp,0x20
+    86 000000D1 48B9-                   	mov rcx,m3
+    86 000000D3 [1200000000000000] 
+    87 000000DB 488B1425[00000000]      	mov rdx,[a]
+    88 000000E3 4C8B0425[08000000]      	mov r8,[b]
+    89 000000EB 4989C1                  	mov r9,rax
+    90 000000EE E8(00000000)            	call printf
+    91 000000F3 4883C420                add rsp,0x20
+    92                                  	
+    93 000000F7 C3                      ret
+    94                                  ;---------------------------------------
+    95                                  ;..........subrutinas....................	
+    96                                  sacarMCD: 
+    97                                  	; 1 : rcx =a
+    98                                  	; 2: rdx =b
+    99                                  ; 1. sacara el menor
+   100 000000F8 4989D4                  mov r12,rdx
+   101 000000FB 4839D1                  cmp rcx,rdx
+   102 000000FE 7C02                    JL esAMenor
+   103 00000100 EB05                    JMP esBMenor
+   104                                  
+   105                                  esAMenor:
+   106 00000102 4989CF                  	mov r15,rcx
+   107 00000105 EB03                    Jmp finComp
+   108                                  esBMenor:
+   109 00000107 4989D7                  	MOV r15,rdx
+   110                                  finComp:
+   111                                  ; Hacer la division entre ambos
+   112                                  
+   113                                  ciclo:
+   114                                  ; division A entre Menor
+   115 0000010A 4889C8                  mov rax,rcx
+   116 0000010D 4899                    cqo
+   117 0000010F 49F7FF                  IDIV r15
+   118                                  ; resultado en rax = cociente :rdx=residuo
+   119 00000112 4883FA00                cmp rdx,0
+   120 00000116 7402                    JE continuar
+   121 00000118 EB0E                    JMP decrementar
+   122                                  ;division de B entre Menor
+   123                                  continuar:
+   124                                  
+   125 0000011A 4C89E0                  mov rax, r12
+   126 0000011D 4899                    cqo
+   127 0000011F 49F7FF                  IDIV r15
+   128 00000122 4883FA00                cmp rdx,0
+   129 00000126 7409                    JE encontroAmbos
+   130                                  
+   131                                  decrementar: 
+   132 00000128 49FFCF                  dec r15
+   133 0000012B 4983FF00                Cmp r15,0
+   134 0000012F 75D9                    JNZ ciclo
+   135                                  
+   136                                  encontroAmbos:
+   137 00000131 4C89F8                  mov rax,r15 
+   138                                  
+   139 00000134 C3                      ret 
+   140                                  
+   141                                  
