@@ -1,0 +1,158 @@
+     1                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     2                                  ;assemble and link with 
+     3                                  ;assemble: -->> nasm -f win64 -o modeloFinal.o modeloFinal.asm -l modeloFinal.lst
+     4                                  ;link:	   -->> gcc -o modeloFinal modeloFinal.o
+     5                                  ;run:      -->> modeloFinal
+     6                                  ;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     7                                  ;-----------------------------------------
+     8                                  
+     9                                  ;file: modeloFinal.asm (nombre programa)
+    10                                  
+    11                                  extern printf, scanf,gets,strlen		
+    12                                  
+    13                                  segment .data
+    14                                  ;aqui se declaran variables inicializadas
+    15 00000000 496E67726573617220-     m1 db "Ingresar la cadena de caracteres (max 100 caracteres)",0
+    15 00000009 6C6120636164656E61-
+    15 00000012 206465206361726163-
+    15 0000001B 746572657320286D61-
+    15 00000024 782031303020636172-
+    15 0000002D 616374657265732900 
+    16 00000036 4C61206E7565766120-     m2 db "La nueva cadena copiada es: %s",0
+    16 0000003F 636164656E6120636F-
+    16 00000048 70696164612065733A-
+    16 00000051 20257300           
+    17                                  		
+    18                                  segment .bss
+    19                                  ;Block Started by Symbol(BSS) 
+    20                                  ;aqui van las variables declaradas pero sin inicializar
+    21 00000000 <res 00000064>          cad1 resb 100
+    22 00000064 <res 00000064>          cad2 resb 100
+    23                                  segment .text 
+    24                                  
+    25                                  global main 					
+    26                                  main:	
+    27                                  ;etiqueta que indica el comienzo del programa principal
+    28                                  ;aqui van las instrucciones
+    29                                   
+    30 00000000 4883EC20                sub rsp,0x20
+    31 00000004 48B9-                   	mov rcx,m1
+    31 00000006 [0000000000000000] 
+    32 0000000E E8(00000000)            	call printf
+    33 00000013 4883C420                add rsp,0x20
+    34                                  
+    35 00000017 4883EC20                sub rsp,0x20
+    36 0000001B 48B9-                   	mov rcx,cad1
+    36 0000001D [0000000000000000] 
+    37 00000025 E8(00000000)            	call gets
+    38 0000002A 4883C420                add rsp,0x20
+    39                                  ; hasta este punto la cadena esta cargada
+    40                                  
+    41 0000002E 4883EC20                sub rsp,0x20
+    42 00000032 48B9-                   	mov rcx,cad1
+    42 00000034 [0000000000000000] 
+    43 0000003C E8(00000000)            	call strlen
+    44 00000041 4883C420                add rsp,0x20
+    45                                  ; return en rax
+    46                                  
+    47                                  
+    48 00000045 4883EC20                sub rsp,0x20
+    49 00000049 48B9-                   	mov rcx,cad1
+    49 0000004B [0000000000000000] 
+    50 00000053 48BA-                   	mov rdx,cad2
+    50 00000055 [6400000000000000] 
+    51 0000005D 4989C0                  	mov r8,rax
+    52 00000060 E826000000              	call copyCad
+    53 00000065 4883C420                add rsp,0x20
+    54                                  
+    55 00000069 4883EC20                sub rsp,0x20
+    56 0000006D 48B9-                   	mov rcx,m2
+    56 0000006F [3600000000000000] 
+    57 00000077 48BA-                   	mov rdx,cad2
+    57 00000079 [6400000000000000] 
+    58 00000081 E8(00000000)            	call printf
+    59 00000086 4883C420                add rsp,0x20	
+    60 0000008A C3                      ret
+    61                                  ;---------------------------------------
+    62                                  ;..........subrutinas....................	
+    63                                  copyCad:
+    64                                  ;rcx direccion cad1
+    65                                  ; rdx direccion cad2
+    66                                  ;r8 longitud de cadena
+    67                                  ;salvamos los parametros
+    68 0000008B 48894C2410              mov [rsp+16],rcx ;direccion de la cad1
+    69 00000090 4889542418              mov [rsp+24],rdx
+    70 00000095 4C89442420              mov [rsp+32],r8
+    71 0000009A 4C8B642418              mov  r12,[rsp+24];indice cad2
+    72 0000009F 4C89C1                  mov rcx,r8 ; en rcx la longitud
+    73 000000A2 4C8B5C2410              mov r11,[rsp+16]
+    74                                  cicloCadena:
+    75 000000A7 51                      push rcx
+    76                                  	;extraccion de caracteres
+    77 000000A8 458A2B                  	mov r13b,[r11]
+    78 000000AB 4831C9                  	XOR RCX,RCX
+    79 000000AE 4883EC20                	sub rsp,0x20
+    80 000000B2 4488E9                  		mov cl,r13b
+    81 000000B5 BA30000000              		mov rdx,0x30
+    82 000000BA 41B839000000            		mov r8,0x39
+    83 000000C0 E862000000              		call dentroRango
+    84 000000C5 4883C420                	add rsp,0x20
+    85                                  	;return rax
+    86 000000C9 4883F801                	CMP rax,1 
+    87 000000CD 744A                    	JE copiar
+    88 000000CF 4831C9                  	xor rcx,rcx
+    89 000000D2 4883EC20                	sub rsp,0x20
+    90 000000D6 4488E9                  		mov cl,r13b
+    91 000000D9 BA41000000              		mov rdx,0x41
+    92 000000DE 41B85A000000            		mov r8,0x5A
+    93 000000E4 E83E000000              		call dentroRango
+    94 000000E9 4883C420                	add rsp,0x20
+    95                                  	;return rax
+    96 000000ED 4883F801                	CMP rax,1 
+    97 000000F1 7426                    	JE copiar
+    98 000000F3 4831C9                  	xor rcx,rcx
+    99 000000F6 4883EC20                	sub rsp,0x20
+   100 000000FA 4488E9                  		mov cl,r13b
+   101 000000FD BA61000000              		mov rdx,0x61
+   102 00000102 41B87A000000            		mov r8,0x7A
+   103 00000108 E81A000000              		call dentroRango
+   104 0000010D 4883C420                	add rsp,0x20
+   105                                  	;return rax
+   106 00000111 4883F801                	CMP rax,1 
+   107 00000115 7402                    	JE copiar 
+   108                                  	
+   109 00000117 EB07                    	JMP saltarCopiar
+   110                                  	copiar:
+   111                                  		;copiamos el caracter
+   112 00000119 45882C24                		mov [r12],r13b
+   113 0000011D 49FFC4                  		inc r12
+   114                                  	
+   115                                  	saltarCopiar:
+   116 00000120 49FFC3                  	inc r11
+   117 00000123 59                      pop rcx
+   118 00000124 E281                    loop cicloCadena
+   119                                  
+   120 00000126 C3                      ret
+   121                                  
+   122                                  dentroRango:
+   123 00000127 48894C2410              mov [rsp+16],rcx ;1 CARACTER
+   124 0000012C 4889542418              mov [rsp+24],rdx ;2 RANGO INICIAL
+   125 00000131 4C89442420              mov [rsp+32],r8;3 RANGO FINAL
+   126                                  
+   127 00000136 4839D1                  cmp rcx,rdx
+   128 00000139 7D02                    JGE esMayor
+   129 0000013B EB0E                    JMP incorrecto
+   130                                  esMayor:
+   131 0000013D 4C39C1                  	CMP RCX,r8
+   132 00000140 7E02                    	JLE correcto
+   133 00000142 EB07                    	JMP incorrecto
+   134                                  correcto:
+   135 00000144 B801000000              	mov rax,1
+   136 00000149 EB05                    	JMP finRango
+   137                                  incorrecto:
+   138 0000014B B800000000              	mov rax,0
+   139                                  
+   140                                  finRango:
+   141 00000150 C3                      RET
+   142                                  
+   143                                  
